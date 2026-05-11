@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: 0 0% 98%;
+  --foreground: 0 0% 10%;
+  --primary: 0 73% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 94%;
+  --secondary-foreground: 0 0% 10%;
+  --destructive: 0 73% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --accent: 0 60% 95%;
+  --accent-foreground: 0 0% 10%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 32%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 0 73% 42%;
+  --surface: 0 0% 98%;
+  --surface-dim: 0 0% 92%;
+  --surface-container-lowest: 0 0% 100%;
+  --surface-container-low: 0 0% 99%;
+  --surface-container: 0 0% 96%;
+  --surface-container-high: 0 0% 94%;
+  --surface-container-highest: 0 0% 92%;
+  --surface-variant: 0 0% 96%;
+  --on-surface-variant: 0 0% 32%;
+  --outline: 0 0% 45%;
+  --outline-variant: 0 0% 90%;
+  --inverse-surface: 0 0% 10%;
+  --inverse-on-surface: 0 0% 98%;
+  --tertiary: 0 0% 10%;
+  --tertiary-foreground: 0 0% 100%;
+  --ink: hsl(var(--foreground));
+  --paper: hsl(var(--background));
+  --line: hsl(var(--border));
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 0 0% 10%;
+  --foreground: 0 0% 96%;
+  --primary: 0 75% 56%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 18%;
+  --secondary-foreground: 0 0% 96%;
+  --destructive: 0 75% 56%;
+  --destructive-foreground: 0 0% 100%;
+  --accent: 0 60% 18%;
+  --accent-foreground: 0 0% 96%;
+  --muted: 0 0% 16%;
+  --muted-foreground: 0 0% 70%;
+  --border: 0 0% 24%;
+  --input: 0 0% 24%;
+  --ring: 0 75% 56%;
+  --surface: 0 0% 10%;
+  --surface-dim: 0 0% 6%;
+  --surface-container-lowest: 0 0% 6%;
+  --surface-container-low: 0 0% 12%;
+  --surface-container: 0 0% 16%;
+  --surface-container-high: 0 0% 20%;
+  --surface-container-highest: 0 0% 24%;
+  --surface-variant: 0 0% 16%;
+  --on-surface-variant: 0 0% 70%;
+  --outline: 0 0% 55%;
+  --outline-variant: 0 0% 24%;
+  --inverse-surface: 0 0% 96%;
+  --inverse-on-surface: 0 0% 10%;
+  --tertiary: 0 0% 96%;
+  --tertiary-foreground: 0 0% 10%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: var(--font-lexend), "Segoe UI", system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-epilogue), "Segoe UI", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bali-text {
+  font-family: "Nirmala UI", "Noto Sans Balinese", serif;
+}
+
+.texture {
+  background:
+    linear-gradient(135deg, hsl(var(--background) / 0.92), hsl(var(--background) / 0.78)),
+    repeating-linear-gradient(0deg, hsl(var(--foreground) / 0.05) 0 1px, transparent 1px 12px);
+}
+
+.ornament {
+  background-image:
+    linear-gradient(90deg, hsl(var(--foreground) / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 10px, hsl(var(--foreground) / 0.1) 10px 12px, transparent 12px);
+  background-size: 28px 100%, 56px 100%;
+}
+
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline-color: hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.transition-within {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.screen-grid {
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.09) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.screen-grid-svg line {
+  stroke: hsl(var(--foreground) / 0.1);
+  stroke-width: 0.45;
+}
+
+.correct-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.wrong-stroke-fade {
+  animation: stroke-fade 0.9s ease forwards;
+  stroke: hsl(var(--foreground));
+}
+
+.hint-stroke {
+  stroke: hsl(var(--muted-foreground));
+}
+
+.animate-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-stroke 1.25s ease forwards;
+}
+
+.svg-tool-test-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 2px 4px hsl(var(--primary) / 0.2));
+  animation: svg-tool-draw 0.82s ease forwards;
+}
+
+@keyframes stroke-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes draw-stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes svg-tool-draw {
+  0% {
+    opacity: 0.35;
+    stroke-dashoffset: 1;
+  }
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

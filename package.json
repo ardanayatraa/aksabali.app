@@ -1,0 +1,45 @@
+{
+  "name": "aksabali-app",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "lint": "eslint .",
+    "db:migrate": "node scripts/migrate.cjs",
+    "db:import-sample-glyphs": "node scripts/import-sample-glyphs.cjs",
+    "build": "next build",
+    "start": "next start",
+    "prod:check": "npm run lint && npm run build && npm audit --omit=dev"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.38.0",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.14.0",
+    "mysql2": "^3.22.3",
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.6",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "postcss": "$postcss"
+  }
+}
