@@ -36,12 +36,14 @@ export function AuthShell({ eyebrow, title, subtitle, children, switchText, swit
 
           {children}
 
-          <p className="mt-6 text-sm text-muted-foreground">
-            {switchText}{" "}
-            <Link href={switchHref} className="font-black text-brick hover:text-ink">
-              {switchLabel}
-            </Link>
-          </p>
+          {switchText && switchHref && switchLabel ? (
+            <p className="mt-6 text-sm text-muted-foreground">
+              {switchText}{" "}
+              <Link href={switchHref} className="font-black text-brick hover:text-ink">
+                {switchLabel}
+              </Link>
+            </p>
+          ) : null}
         </section>
       </div>
     </main>

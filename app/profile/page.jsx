@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookOpenText, Gamepad2, GraduationCap, Mail, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { BookOpenText, Gamepad2, GraduationCap, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { AppShell } from "../../components/AppShell";
 import { ProductionSetupNotice } from "../../components/ProductionSetupNotice";
 import { getCurrentUser } from "../../lib/server/auth";
@@ -50,50 +50,6 @@ function roleLabelFor(user) {
   return "Siswa";
 }
 
-function IdentityCard({ user }) {
-  const roleLabel = roleLabelFor(user);
-
-  return (
-    <section className="rounded-[1.5rem] border border-ink/10 bg-rice/80 p-6 shadow-[0_18px_50px_hsl(var(--foreground)/0.07)]">
-      <div className="flex items-start gap-4">
-        <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-brick text-2xl font-black text-primary-foreground">
-          {(user.display_name || user.email || "AB").slice(0, 2).toUpperCase()}
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-brick">
-            Profil {roleLabel}
-          </p>
-          <h1 className="mt-2 truncate font-display text-4xl font-semibold leading-tight sm:text-5xl">
-            {user.display_name}
-          </h1>
-          <p className="mt-2 flex min-w-0 items-center gap-2 truncate text-sm font-semibold text-muted-foreground/70">
-            <Mail className="h-4 w-4 shrink-0" />
-            {user.email}
-          </p>
-        </div>
-      </div>
-      <div className="mt-6 flex flex-wrap gap-2">
-        <span className="rounded-full bg-brick/10 px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-brick">
-          {roleLabel}
-        </span>
-        <span className="rounded-full bg-lontar px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-          {user.tier || "free"}
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function StatCard({ label, value, meta }) {
-  return (
-    <div className="rounded-2xl border border-ink/10 bg-rice/80 p-5 shadow-[0_12px_34px_hsl(var(--foreground)/0.05)]">
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground/55">{label}</p>
-      <p className="mt-3 text-4xl font-black text-ink">{value}</p>
-      <p className="mt-1 text-sm font-semibold text-brick">{meta}</p>
-    </div>
-  );
-}
-
 export default async function ProfilePage() {
   let user;
   let dashboard = null;
@@ -120,76 +76,117 @@ export default async function ProfilePage() {
 
   const isAdmin = user.role === "admin";
   const isTeacher = user.role === "pengajar";
+  const profile = dashboard?.profile || user;
+  const roleLabel = roleLabelFor(profile);
+
+  const stats = isAdmin
+    ? [
+        { label: "Kategori", value: adminStats.categories, meta: "konten aktif" },
+        { label: "Aksara", value: adminStats.aksara, meta: "materi katalog" },
+        { label: "Siswa", value: adminStats.students, meta: "akun belajar" }
+      ]
+    : isTeacher
+      ? [
+          { label: "Room", value: teacherStats.sessions, meta: "game dibuat" },
+          { label: "Pemain", value: teacherStats.players, meta: "pernah join" },
+          { label: "Live", value: teacherStats.live, meta: "sedang berjalan" }
+        ]
+      : [
+          { label: "Stroke", value: dashboard.stats.totalAttempts, meta: "percobaan tersimpan" },
+          { label: "Skor rata-rata", value: dashboard.stats.averageScore, meta: "latihan nyurat" },
+          { label: "Minggu ini", value: dashboard.stats.weeklyAttempts, meta: `${dashboard.stats.weeklyXp} XP` }
+        ];
+
+  const heroEyebrow = `Profil ${roleLabel.toLowerCase()}`;
+  const heroDescription = isAdmin
+    ? "Kelola konten, kategori, materi aksara, dan pengguna dari satu tempat."
+    : isTeacher
+      ? "Buat room game, jalankan sesi live, dan pantau aktivitas kelas."
+      : "Latihan nyurat, kerjain kuis, dan gabung game kelas — semua progresmu tersimpan otomatis.";
 
   return (
-    <AppShell user={dashboard?.profile || user} subscription={dashboard?.subscription}>
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[380px_1fr] lg:px-8">
-        <IdentityCard user={dashboard?.profile || user} />
-
-        <section className="rounded-[1.5rem] border border-ink/10 bg-rice/72 p-6 shadow-[0_18px_50px_hsl(var(--foreground)/0.06)]">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.18em] text-brick">
-                {isAdmin ? <ShieldCheck className="h-4 w-4" /> : isTeacher ? <GraduationCap className="h-4 w-4" /> : <BookOpenText className="h-4 w-4" />}
-                {isAdmin ? "Ruang admin" : isTeacher ? "Ruang guru" : "Ruang siswa"}
-              </p>
-              <h2 className="mt-2 text-3xl font-black">
-                {isAdmin ? "Kelola aplikasi dari satu tempat." : isTeacher ? "Kelola game kelas dari satu tempat." : "Pantau progres belajar kamu."}
-              </h2>
-              <p className="mt-2 max-w-2xl leading-7 text-muted-foreground/70">
-                {isAdmin
-                  ? "Akun admin fokus untuk konten, kategori, dan materi aksara. Area latihan siswa sengaja dipisah."
-                  : isTeacher
-                    ? "Akun guru fokus untuk membuat room Kahoot, mengatur sesi live, dan melihat aktivitas game kelas."
-                  : "Akun siswa fokus untuk latihan nyurat, kuis, game kelas, dan progres belajar."}
-              </p>
-            </div>
-            <Link
-              href={isAdmin ? "/admin" : isTeacher ? "/guru" : "/dashboard"}
-              className="focus-ring inline-flex min-h-12 items-center justify-center rounded-xl bg-brick px-5 text-sm font-black text-primary-foreground"
-            >
-              {isAdmin ? "Buka admin" : isTeacher ? "Buka ruang guru" : "Buka dashboard"}
-            </Link>
+    <AppShell user={profile} subscription={dashboard?.subscription}>
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        {/* Hero flat */}
+        <section>
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-brick">{heroEyebrow}</p>
+          <h1 className="mt-2 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            {profile.display_name}
+          </h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{heroDescription}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-bold text-ink/70">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/[0.04] px-3 py-1">
+              <Mail className="h-3.5 w-3.5 text-brick" />
+              {profile.email}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/[0.04] px-3 py-1 uppercase tracking-widest">
+              Paket · {(profile.tier || "free").toLowerCase()}
+            </span>
           </div>
+        </section>
 
-          <div className="mt-7 grid gap-4 sm:grid-cols-3">
-            {isAdmin ? (
-              <>
-                <StatCard label="Kategori" value={adminStats.categories} meta="konten aktif" />
-                <StatCard label="Aksara" value={adminStats.aksara} meta="materi katalog" />
-                <StatCard label="Siswa" value={adminStats.students} meta="akun belajar" />
-              </>
-            ) : isTeacher ? (
-              <>
-                <StatCard label="Room" value={teacherStats.sessions} meta="game dibuat" />
-                <StatCard label="Pemain" value={teacherStats.players} meta="pernah join" />
-                <StatCard label="Live" value={teacherStats.live} meta="sedang berjalan" />
-              </>
-            ) : (
-              <>
-                <StatCard label="Stroke" value={dashboard.stats.totalAttempts} meta="percobaan tersimpan" />
-                <StatCard label="Skor rata-rata" value={dashboard.stats.averageScore} meta="latihan nyurat" />
-                <StatCard label="Minggu ini" value={dashboard.stats.weeklyAttempts} meta={`${dashboard.stats.weeklyXp} XP`} />
-              </>
-            )}
-          </div>
-
-          <div className="mt-7 rounded-2xl bg-lontar p-5">
-            <div className="flex items-start gap-3">
-              {isTeacher ? <Gamepad2 className="mt-1 h-5 w-5 shrink-0 text-brick" /> : <Sparkles className="mt-1 h-5 w-5 shrink-0 text-brick" />}
-              <div>
-                <p className="font-black text-ink">
-                  {isAdmin ? "Mode admin tidak membuka latihan siswa." : isTeacher ? "Mode guru menjadi host, bukan pemain." : "Mode siswa tidak membuka panel admin."}
-                </p>
-                <p className="mt-1 leading-7 text-muted-foreground/70">
-                  {isAdmin
-                    ? "Kalau butuh mencoba latihan sebagai siswa, gunakan akun siswa terpisah agar data progres tidak bercampur dengan akun admin."
-                    : isTeacher
-                      ? "Kalau ingin ikut bermain sebagai siswa, gunakan akun siswa terpisah agar skor kelas tetap jelas."
-                    : "Kalau butuh akses kelola konten, masuk memakai akun admin yang memang disiapkan untuk pengelolaan."}
-                </p>
+        {/* Stats 1 card dgn divider */}
+        <section className="mt-10 rounded-2xl border border-ink/[0.08] bg-rice">
+          <div className="grid divide-ink/[0.08] sm:grid-cols-3 sm:divide-x">
+            {stats.map((stat, i) => (
+              <div
+                key={stat.label}
+                className={`px-6 py-5 ${i < stats.length - 1 ? "border-b border-ink/[0.08] sm:border-b-0" : ""}`}
+              >
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-ink/45">{stat.label}</p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight">{stat.value}</p>
+                <p className="mt-1 text-xs font-semibold text-ink/55">{stat.meta}</p>
               </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Main action + reminder */}
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+          <div className="rounded-2xl border border-ink/[0.08] bg-rice p-7">
+            <p className="inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] text-brick">
+              {isAdmin ? <ShieldCheck className="h-3.5 w-3.5" /> : isTeacher ? <GraduationCap className="h-3.5 w-3.5" /> : <BookOpenText className="h-3.5 w-3.5" />}
+              {isAdmin ? "Ruang admin" : isTeacher ? "Ruang guru" : "Ruang siswa"}
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-semibold leading-tight tracking-tight">
+              {isAdmin ? "Kelola semua dari sini." : isTeacher ? "Atur kelasmu di sini." : "Cek progres belajarmu."}
+            </h2>
+            <p className="mt-2 max-w-md text-sm leading-6 text-ink/65">
+              {isAdmin
+                ? "Konten, kategori, aksara, dan pengguna semuanya di admin panel."
+                : isTeacher
+                  ? "Buat room, share PIN, lalu kontrol soal dari layar guru."
+                  : "Lanjut latihan nyurat atau kerjain kuis dari dashboard."}
+            </p>
+            <div className="mt-6">
+              <Link
+                href={isAdmin ? "/admin" : isTeacher ? "/guru" : "/dashboard"}
+                className="inline-flex items-center gap-2 rounded-full bg-brick px-5 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-brick/90"
+              >
+                {isAdmin ? "Buka admin" : isTeacher ? "Buka ruang guru" : "Buka dashboard"}
+              </Link>
             </div>
+          </div>
+
+          <div className="rounded-2xl border border-ink/[0.08] bg-rice p-7">
+            <p className="inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] text-brick">
+              {isTeacher ? <Gamepad2 className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+              Catatan akun
+            </p>
+            <p className="mt-3 font-display text-xl font-semibold leading-tight tracking-tight">
+              {isAdmin
+                ? "Akun admin khusus kelola konten."
+                : isTeacher
+                  ? "Akun guru jadi host, bukan pemain."
+                  : "Akun siswa fokus belajar."}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-ink/65">
+              {isAdmin
+                ? "Mau coba latihan? Pakai akun siswa terpisah biar progres nggak nyampur."
+                : isTeacher
+                  ? "Mau ikut main? Bikin akun siswa terpisah biar skor kelas tetap bersih."
+                  : "Butuh akses kelola konten? Login pakai akun admin."}
+            </p>
           </div>
         </section>
       </div>

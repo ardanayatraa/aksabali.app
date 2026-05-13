@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Aksara Bali Learning Platform — Next.js 16 (App Router) + React 19 + MySQL. Two main product surfaces: **solo stroke-writing practice** (canvas + stroke-order feedback) and **Kahoot-style multiplayer quiz**. Serves both web (host/landing/practice) and an Android client via a versioned mobile API. See [PRD.md](PRD.md) for product context; loose top-level `*.html` files (Dashboard, Lesson, Lobby, Podium, Question) are design prototypes, not part of the Next build.
+Aksara Bali Learning Platform — Next.js 16 (App Router) + React 19 + MySQL. Two main product surfaces: **solo stroke-writing practice** (canvas + stroke-order feedback) and **multiplayer quiz kelas** (mode `acak` etc.). Serves both web (host/landing/practice) and an Android client via a versioned mobile API. See [PRD.md](PRD.md) for product context; loose top-level `*.html` files (Dashboard, Lesson, Lobby, Podium, Question) are design prototypes, not part of the Next build.
 
 ## Common commands
 

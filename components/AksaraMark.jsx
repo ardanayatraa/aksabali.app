@@ -1,3 +1,7 @@
+import { CP, glyph } from "../lib/aksara-codepoints";
+
+const BRAND_GLYPH = glyph(CP.akara); // ᬅ — aksara swara A, dipakai sebagai brand mark
+
 export function AksaraMark({ compact = false }) {
   return (
     <div className="flex items-center gap-3">
@@ -6,7 +10,7 @@ export function AksaraMark({ compact = false }) {
           compact ? "h-9 w-9 text-xl" : "h-11 w-11 text-2xl"
         }`}
       >
-        ᬅ
+        {BRAND_GLYPH}
       </div>
       <div className="leading-tight">
         <div className="font-display text-xl font-semibold tracking-normal text-ink">

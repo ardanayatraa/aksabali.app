@@ -63,7 +63,7 @@ export default async function GuruPage() {
               Host game kelas.
             </h1>
             <p className="mt-3 max-w-2xl text-lg leading-8 text-muted-foreground/70">
-              Buat room Kahoot, bagikan PIN ke siswa, lalu kontrol soal dari layar guru.
+              Buat room game, bagikan PIN ke siswa, lalu kontrol soal dari layar guru.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export default async function GuruPage() {
           </div>
           <div className="rounded-2xl border border-ink/10 bg-rice/80 p-5 shadow-[0_12px_34px_hsl(var(--foreground)/0.05)]">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground/55">Mode</p>
-            <p className="mt-3 text-4xl font-black">Kahoot</p>
+            <p className="mt-3 text-4xl font-black">Acak</p>
           </div>
         </section>
 

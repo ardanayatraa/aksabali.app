@@ -38,8 +38,8 @@ export const quizModes = [
     badge: "Maca"
   },
   {
-    id: "kahoot",
-    title: "Mode Kahoot",
+    id: "acak",
+    title: "Mode Acak",
     description: "Soal acak dari semua bank kuis.",
     badge: "Acak"
   }
@@ -128,13 +128,17 @@ function randomize(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
-function buildKahootQuestions() {
+function buildAcakQuestions() {
+  // Mode Acak — Quiz Global: tarik dari SEMUA kategori materi, full set (bukan slice).
+  // Pool digabung lalu di-shuffle, ambil 15 soal random.
   const base = [
-    ...writingPool.map((item, index) => choiceQuestion(item, writingPool, "latin-glyph", index, "kahoot")),
-    ...kataAksara.map((item, index) => choiceQuestion(item, kataAksara, "glyph-latin", index, "kahoot")),
-    ...allLetters.map((item, index) => choiceQuestion(item, allLetters, index % 2 ? "latin-glyph" : "glyph-latin", index, "kahoot"))
+    ...anacaraka.map((item, index) => choiceQuestion(item, anacaraka, index % 2 ? "latin-glyph" : "glyph-latin", index, "acak")),
+    ...swara.map((item, index) => choiceQuestion(item, swara, index % 2 ? "latin-glyph" : "glyph-latin", index, "acak")),
+    ...angka.map((item, index) => choiceQuestion(item, angka, index % 2 ? "latin-glyph" : "glyph-latin", index, "acak")),
+    ...gabunganVokal.map((item, index) => choiceQuestion(item, gabunganVokal, index % 2 ? "latin-glyph" : "glyph-latin", index, "acak")),
+    ...kataAksara.map((item, index) => choiceQuestion(item, kataAksara, index % 2 ? "latin-glyph" : "glyph-latin", index, "acak"))
   ];
-  return randomize(base).slice(0, 12);
+  return randomize(base).slice(0, 15);
 }
 
 function ScoreBadge({ score, total }) {
@@ -663,11 +667,11 @@ export function QuizStudio({ initialMode = "nyurat", strokeQuiz = null, canSaveS
   const activeModeMeta = quizModes.find((mode) => mode.id === activeMode) || quizModes[0];
   const [score, setScore] = useState(0);
   const [restartKey, setRestartKey] = useState(0);
-  const [kahootQuestions, setKahootQuestions] = useState([]);
+  const [acakQuestions, setAcakQuestions] = useState([]);
   const questions = useMemo(() => {
-    if (activeMode === "kahoot") return kahootQuestions;
+    if (activeMode === "acak") return acakQuestions;
     return buildQuestions(activeMode);
-  }, [activeMode, kahootQuestions]);
+  }, [activeMode, acakQuestions]);
 
   function restart() {
     setScore(0);
@@ -684,13 +688,13 @@ export function QuizStudio({ initialMode = "nyurat", strokeQuiz = null, canSaveS
               Latihan aksara, <em className="italic text-[#8B1F18]">lebih cepat paham.</em>
             </h1>
             <p className="mt-5 max-w-[342px] text-base leading-7 text-[#4A3F37] sm:max-w-xl sm:text-lg sm:leading-8">
-              Pilih mode kuis untuk anacaraka, swara AIUEO, angka Bali, gabungan huruf-vokal, dan latihan baca kata.
+              Pilih mode kuis untuk anacaraka, pangangge suara, angka Bali, gabungan huruf-vokal, dan latihan baca kata.
             </p>
           </div>
           <div className="grid w-full max-w-[342px] grid-cols-2 gap-3 rounded-[28px] border border-[#2A2520]/10 bg-white/75 p-4 shadow-[0_18px_50px_rgba(42,37,32,0.07)] backdrop-blur sm:max-w-none sm:grid-cols-3">
             {[
               ["Anacaraka", anacaraka.length],
-              ["AIUEO", swara.length],
+              ["Pangangge", swara.length],
               ["Angka", angka.length],
               ["Gabungan", gabunganVokal.length],
               ["Kata", kataAksara.length],
@@ -740,12 +744,12 @@ export function QuizStudio({ initialMode = "nyurat", strokeQuiz = null, canSaveS
           <MatchingQuiz onRestart={restart} />
         ) : activeMode === "maca" ? (
           <InputQuiz questions={questions} score={score} setScore={setScore} onRestart={restart} />
-        ) : activeMode === "kahoot" && !kahootQuestions.length ? (
+        ) : activeMode === "acak" && !acakQuestions.length ? (
           <div className="rounded-[28px] border border-[#2A2520]/10 bg-white/82 p-7 text-center shadow-[0_18px_50px_rgba(42,37,32,0.08)] backdrop-blur">
             <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-[#8B1F18] text-white">
               <Sparkles className="h-8 w-8" />
             </div>
-            <h2 className="mt-5 font-display text-4xl font-semibold">Mode Kahoot acak.</h2>
+            <h2 className="mt-5 font-display text-4xl font-semibold">Mode Acak.</h2>
             <p className="mx-auto mt-3 max-w-xl leading-7 text-[#4A3F37]">
               Sistem mengambil soal dari semua mode kuis: huruf, kata, angka, swara, dan gabungan vokal.
             </p>
@@ -753,11 +757,11 @@ export function QuizStudio({ initialMode = "nyurat", strokeQuiz = null, canSaveS
               type="button"
               onClick={() => {
                 setScore(0);
-                setKahootQuestions(buildKahootQuestions());
+                setAcakQuestions(buildAcakQuestions());
               }}
               className="mt-6 rounded-full bg-[#8B1F18] px-6 py-3 text-sm font-black text-white"
             >
-              Mulai Kahoot acak
+              Mulai mode acak
             </button>
           </div>
         ) : (

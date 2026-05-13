@@ -175,6 +175,7 @@ async function main() {
     await connection.query(ddl);
     await ensureColumn(connection, 'aksara', 'image_url', 'TEXT NULL AFTER svg_url');
     await ensureColumn(connection, 'aksara', 'target_stroke_count', 'INT NOT NULL DEFAULT 0 AFTER image_url');
+    await ensureColumn(connection, 'profiles', 'status', "ENUM('active','suspended') NOT NULL DEFAULT 'active' AFTER tier");
     if (seed.trim()) {
       await connection.query(seed);
     }

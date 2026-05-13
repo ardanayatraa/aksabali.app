@@ -1,53 +1,52 @@
 import Link from "next/link";
 import { BookOpenText, Hash, Layers, Library, PenLine, Type } from "lucide-react";
-import { GlyphImage } from "./GlyphImage";
 
 const practiceModes = [
   {
     id: "nyurat",
-    title: "Latihan Nyurat",
+    title: "Nyurat",
     badge: "Stroke",
-    description: "Pilih aksara lalu tulis di kanvas dengan stroke recognition.",
+    description: "Tulis di kanvas, sistem cek bentuknya.",
     href: "/latihan/nyurat",
     icon: PenLine
   },
   {
     id: "huruf",
-    title: "Latihan Huruf",
+    title: "Huruf",
     badge: "Anacaraka",
-    description: "Hafalkan bentuk dasar ha na ca ra ka dan seterusnya.",
+    description: "Hafalin bentuk dasar ha na ca ra ka.",
     href: "/latihan/huruf",
     icon: Type
   },
   {
     id: "swara",
-    title: "Latihan Swara",
-    badge: "AIUEO",
-    description: "Latih aksara suara a, i, u, e, dan o.",
+    title: "Pangangge",
+    badge: "Sandangan",
+    description: "Ulu, suku, taleng, pepet, tedung — sandangan vokal yang nempel ke konsonan.",
     href: "/latihan/swara",
     icon: Library
   },
   {
     id: "angka",
-    title: "Latihan Angka",
-    badge: "0-9",
-    description: "Kenali angka Bali dari nol sampai sembilan.",
+    title: "Angka",
+    badge: "0–9",
+    description: "Angka Bali dari nol sampai sembilan.",
     href: "/latihan/angka",
     icon: Hash
   },
   {
     id: "kata",
-    title: "Latihan Kata",
+    title: "Kata",
     badge: "Kata",
-    description: "Lihat kata Latin dan aksara Balinya secara berdampingan.",
+    description: "Kata Latin dan aksara Bali bersisian.",
     href: "/latihan/kata",
     icon: Layers
   },
   {
     id: "membaca",
-    title: "Latihan Membaca",
+    title: "Membaca",
     badge: "Maca",
-    description: "Baca aksara dulu, lalu cek bacaan Latinnya.",
+    description: "Baca aksara dulu, cek bacaannya.",
     href: "/latihan/membaca",
     icon: BookOpenText
   }
@@ -55,7 +54,6 @@ const practiceModes = [
 
 export function PracticeIndex({
   catalog = [],
-  basePath = "/latihan",
   showModeTiles = true,
   eyebrow = "Latihan",
   title = "Pilih mode latihan.",
@@ -64,108 +62,49 @@ export function PracticeIndex({
   const withPattern = catalog.filter((item) => item.svg_url);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <section className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-end">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-brick">{eyebrow}</p>
-          <h1 className="mt-2 font-display text-5xl font-semibold leading-tight">
-            {title}
-          </h1>
-          <p className="mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
-            {description}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-ink/10 bg-rice/75 p-5 shadow-[0_12px_34px_hsl(var(--foreground)/0.06)]">
-          <div className="flex items-center gap-3">
-            <BookOpenText className="h-8 w-8 text-brick" />
-            <div>
-              <p className="text-2xl font-black">{withPattern.length}/{catalog.length}</p>
-              <p className="text-sm font-bold text-muted-foreground/65">materi punya pola stroke</p>
-            </div>
-          </div>
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Hero flat — counter jadi chip kecil, bukan card terpisah */}
+      <section>
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-brick">{eyebrow}</p>
+        <h1 className="mt-2 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          {title}
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+          {description}
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink/[0.04] px-3 py-1 text-xs font-bold text-ink/70">
+          <BookOpenText className="h-3.5 w-3.5 text-brick" />
+          {withPattern.length} dari {catalog.length} aksara siap dilatih
         </div>
       </section>
 
+      {/* Mode tiles — lebih kompak, no heavy shadow */}
       {showModeTiles && (
-        <section className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {practiceModes.map((mode) => {
             const Icon = mode.icon;
             return (
               <Link
                 key={mode.id}
                 href={mode.href}
-                className="group min-h-56 rounded-[24px] border border-ink/10 bg-rice/80 p-5 text-ink shadow-[0_14px_34px_hsl(var(--foreground)/0.05)] transition hover:-translate-y-0.5 hover:border-brick/35"
+                className="group rounded-2xl border border-ink/[0.08] bg-rice p-5 text-ink transition hover:border-brick/40 hover:bg-rice"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="rounded-full bg-lontar px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.12em] text-brick">
-                    {mode.badge}
-                  </span>
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brick/10 text-brick transition group-hover:bg-brick group-hover:text-primary-foreground">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-brick/10 text-brick transition group-hover:bg-brick group-hover:text-primary-foreground">
                     <Icon className="h-5 w-5" />
                   </span>
+                  <span className="rounded-full bg-ink/[0.04] px-2.5 py-1 text-[0.6rem] font-black uppercase tracking-widest text-ink/55">
+                    {mode.badge}
+                  </span>
                 </div>
-                <span className="mt-7 block text-2xl font-black">{mode.title}</span>
-                <span className="mt-3 block text-sm leading-6 text-muted-foreground">{mode.description}</span>
+                <p className="mt-5 text-lg font-extrabold tracking-tight">{mode.title}</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">{mode.description}</p>
               </Link>
             );
           })}
         </section>
       )}
 
-      <section className="mt-10">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-brick">Materi nyurat</p>
-            <h2 className="mt-1 text-3xl font-black">Pilih aksara untuk kanvas.</h2>
-          </div>
-          <Link href="/latihan/nyurat" className="text-sm font-black text-brick hover:text-ink">
-            Buka Latihan Nyurat
-          </Link>
-        </div>
-      </section>
-
-      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {catalog.map((unit) => (
-          <Link
-            key={unit.id}
-            href={`${basePath}/${unit.id}`}
-            className="group min-h-60 rounded-[24px] border border-ink/10 bg-rice/80 p-5 text-ink shadow-[0_14px_34px_hsl(var(--foreground)/0.05)] transition hover:-translate-y-0.5 hover:border-brick/35"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground/55">{unit.category}</p>
-                <h2 className="mt-2 text-xl font-black">{unit.latin || unit.name}</h2>
-              </div>
-              <GlyphImage
-                src={unit.image_url}
-                glyph={unit.glyph}
-                label={unit.latin || unit.name}
-                className="bali-text grid h-16 w-16 place-items-center rounded-2xl bg-brick/10 text-5xl leading-none text-brick transition group-hover:bg-brick group-hover:text-primary-foreground"
-                imageClassName="h-16 w-16 rounded-2xl bg-brick/10 object-contain p-2 transition group-hover:bg-brick/15"
-              />
-            </div>
-            <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground/70">{unit.notes || unit.name}</p>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm font-black">
-              <span className="inline-flex items-center gap-2">
-                <PenLine className="h-4 w-4 text-brick" />
-                {unit.svg_url ? "Bisa latihan" : "Pola belum ada"}
-              </span>
-              <span className="text-brick">
-                {Number(unit.target_stroke_count || 0) || "-"} goresan
-              </span>
-              <span className={unit.is_premium ? "text-brick" : "text-[#4A7C59]"}>
-                {unit.is_premium ? "Premium" : "Free"}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </section>
-
-      {!catalog.length && (
-        <div className="mt-8 rounded-[22px] border border-ink/10 bg-rice/80 p-6 text-muted-foreground">
-          Materi latihan belum ada. Tambahkan konten lewat halaman admin.
-        </div>
-      )}
     </div>
   );
 }

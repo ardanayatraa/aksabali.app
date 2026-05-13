@@ -4,6 +4,7 @@ import { redirectNonStudentFromStudentArea } from "../../lib/server/access";
 import { getCurrentUser } from "../../lib/server/auth";
 import { getPracticeCatalog } from "../../lib/server/data";
 import { ProductionConfigError } from "../../lib/server/env";
+import { CP, glyph } from "../../lib/aksara-codepoints";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ const fallbackCatalog = [
   {
     id: "gabungan-vokal-ki-1B13-1B36",
     name: "Ki",
-    glyph: "ᬓᬶ",
+    glyph: glyph(CP.ka, CP.ulu),
     latin: "ki",
     category: "gabungan-vokal",
     is_premium: false,

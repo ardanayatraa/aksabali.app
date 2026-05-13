@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 ALTER TABLE profiles
   MODIFY role ENUM('user', 'admin', 'siswa', 'pengajar') NOT NULL DEFAULT 'siswa';
+-- NOTE: kolom `status` (ENUM active|suspended) ditangani via ensureColumn() di scripts/migrate.cjs
+-- karena MySQL versi tertentu nggak dukung ADD COLUMN IF NOT EXISTS.
 
 CREATE TABLE IF NOT EXISTS user_credentials (
   user_id VARCHAR(64) PRIMARY KEY,
@@ -156,7 +158,7 @@ CREATE TABLE IF NOT EXISTS game_sessions (
   pin VARCHAR(12) NOT NULL UNIQUE,
   host_id VARCHAR(64) NOT NULL,
   title VARCHAR(255) NOT NULL,
-  status ENUM('lobby', 'live', 'finished') NOT NULL DEFAULT 'lobby',
+  status ENUM('lobby', 'live', 'finished', 'expired') NOT NULL DEFAULT 'lobby',
   question_count INT NOT NULL DEFAULT 0,
   seconds_per_question INT NOT NULL DEFAULT 20,
   current_question_index INT NOT NULL DEFAULT 0,
@@ -166,6 +168,9 @@ CREATE TABLE IF NOT EXISTS game_sessions (
   INDEX idx_game_sessions_host (host_id),
   CONSTRAINT fk_game_sessions_host FOREIGN KEY (host_id) REFERENCES profiles(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE game_sessions
+  MODIFY status ENUM('lobby', 'live', 'finished', 'expired') NOT NULL DEFAULT 'lobby';
 
 CREATE TABLE IF NOT EXISTS game_players (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -214,9 +219,28 @@ CREATE TABLE IF NOT EXISTS game_answers (
   CONSTRAINT fk_game_answers_player FOREIGN KEY (player_id) REFERENCES game_players(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS app_settings (
+  setting_key VARCHAR(64) PRIMARY KEY,
+  setting_value TEXT NOT NULL,
+  updated_by VARCHAR(64) NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO app_settings (setting_key, setting_value) VALUES
+  ('site_mode', 'live'),
+  ('launch_at', '2026-06-30T00:00:00Z')
+ON DUPLICATE KEY UPDATE setting_value = setting_value;
+
 INSERT INTO categories (id, name, description, `order`)
-VALUES ('wrehasta', 'Wrehastra', 'Aksara dasar untuk latihan stroke awal.', 1)
+VALUES
+  ('wrehasta', 'Wrehastra', 'Aksara dasar untuk latihan stroke awal.', 1),
+  ('swara', 'Pangangge Suara', 'Sandangan vokal: ulu, suku, taleng, pepet, tedung, taleng tedung.', 20)
 ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), `order` = VALUES(`order`);
+
+-- Pangangge Suara di-seed via script terpisah:
+--   npm run db:seed-pangangge
+-- Script baca kode Unicode dari config + construct char via String.fromCodePoint,
+-- jadi tidak ada literal karakter aksara di SQL atau JS.
 
 INSERT INTO aksara (id, name, `char`, latin, category, `order`, is_premium, svg_url, image_url, target_stroke_count, notes)
 VALUES (

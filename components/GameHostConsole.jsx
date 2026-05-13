@@ -17,7 +17,7 @@ function statusLabel(status) {
 const QUESTION_CATEGORIES = [
   { id: "semua", name: "Semua Aksara", meta: "59 item" },
   { id: "anacaraka", name: "Anacaraka", meta: "18 dasar" },
-  { id: "swara", name: "Swara AIUEO", meta: "5 vokal" },
+  { id: "swara", name: "Pangangge Suara", meta: "6 sandangan vokal" },
   { id: "angka", name: "Angka Bali", meta: "10 angka" },
   { id: "gabungan-vokal", name: "Gabungan Huruf + Vokal", meta: "16 suku kata" },
   { id: "kata", name: "Kata Aksara", meta: "10 kata" },
@@ -26,8 +26,8 @@ const QUESTION_CATEGORIES = [
 
 export function GameHostConsole({ initialSession = null }) {
   const [session, setSession] = useState(initialSession);
-  const [title, setTitle] = useState("Kahoot Aksa Bali");
-  const [mode, setMode] = useState("kahoot");
+  const [title, setTitle] = useState("Game Aksa Bali");
+  const [mode, setMode] = useState("acak");
   const [selectedCategoryIds, setSelectedCategoryIds] = useState(["semua"]);
   const [questionCount, setQuestionCount] = useState(10);
   const [secondsPerQuestion, setSecondsPerQuestion] = useState(20);
@@ -128,7 +128,7 @@ export function GameHostConsole({ initialSession = null }) {
             <Gamepad2 className="h-4 w-4" />
             Host guru
           </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight">Buat room Kahoot.</h1>
+          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight">Buat room game.</h1>
           <p className="mt-3 leading-7 text-muted-foreground/72">
             Guru membuat PIN, siswa masuk sebagai pemain, lalu guru mengatur jalannya soal.
           </p>
@@ -150,7 +150,7 @@ export function GameHostConsole({ initialSession = null }) {
                 onChange={(event) => setMode(event.target.value)}
                 className="h-14 rounded-2xl border border-ink/10 bg-lontar px-4 font-bold outline-none focus:border-brick"
               >
-                <option value="kahoot">Kahoot acak</option>
+                <option value="acak">Acak</option>
                 <option value="huruf">Huruf</option>
                 <option value="kata">Kata</option>
               </select>

@@ -110,13 +110,13 @@ Mode tersedia:
 - `huruf`
 - `match`
 - `maca`
-- `kahoot`
+- `acak`
 
 `GET /api/mobile/v1/quiz/materials`
 
 Mengembalikan bahan anacaraka, swara aiueo, angka, gabungan vokal, kata, dan bank kuis.
 
-`GET /api/mobile/v1/quiz/questions?mode=kahoot&limit=10&seed=kelas-a`
+`GET /api/mobile/v1/quiz/questions?mode=acak&limit=10&seed=kelas-a`
 
 Query:
 
@@ -195,7 +195,7 @@ Butuh token host/guru.
 ```json
 {
   "title": "Kuis Aksara Kelas 5",
-  "mode": "kahoot",
+  "mode": "acak",
   "questionCount": 12,
   "secondsPerQuestion": 20,
   "seed": "kelas-5-sesi-1"

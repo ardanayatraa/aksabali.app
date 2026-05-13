@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Brush, Check, Code2, Eye, Image as ImageIcon, PenTool, Play, Plus, RotateCcw, Save, Trash2, Undo2, X } from "lucide-react";
+import { Brush, Check, Code2, Eye, Image as ImageIcon, PenTool, Play, Plus, Save, Trash2, Undo2, X } from "lucide-react";
 
 const VIEWBOX_SIZE = 109;
 const DRAW_MARGIN = 6;
@@ -181,11 +181,14 @@ function xmlEscape(value) {
     .replace(/>/g, "&gt;");
 }
 
-function buildSvg(strokes, aksara) {
+const DEFAULT_STROKE_WIDTH = 4.8;
+
+function buildSvg(strokes, aksara, strokeWidth = DEFAULT_STROKE_WIDTH) {
+  const width = Number(strokeWidth) || DEFAULT_STROKE_WIDTH;
   const paths = strokes
     .map((stroke, index) => {
       const d = strokePath(stroke, false);
-      return `  <path id="stroke-${index + 1}" d="${xmlEscape(d)}" fill="none" stroke="black" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" />`;
+      return `  <path id="stroke-${index + 1}" d="${xmlEscape(d)}" fill="none" stroke="black" stroke-width="${width.toFixed(2)}" stroke-linecap="round" stroke-linejoin="round" />`;
     })
     .join("\n");
 
@@ -282,6 +285,7 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
   const activeDraftPoints = useRef([]);
   const animationTimeout = useRef(null);
   const [referenceOpacity, setReferenceOpacity] = useState(0.22);
+  const [strokeWidth, setStrokeWidth] = useState(DEFAULT_STROKE_WIDTH);
   const [toolMode, setToolMode] = useState("free");
   const [strokes, setStrokes] = useState([]);
   const [activePoints, setActivePoints] = useState([]);
@@ -292,7 +296,10 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
   const [isTestingAnimation, setIsTestingAnimation] = useState(false);
   const [message, setMessage] = useState("");
 
-  const generatedSvg = useMemo(() => buildSvg(strokes, aksara), [aksara, strokes]);
+  const generatedSvg = useMemo(
+    () => buildSvg(strokes, aksara, strokeWidth),
+    [aksara, strokes, strokeWidth]
+  );
   const generatedSvgPreviewUrl = useMemo(
     () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(generatedSvg)}`,
     [generatedSvg]
@@ -552,34 +559,64 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
 
   return (
     <section className="mt-5 rounded-2xl border border-[#2A2520]/10 bg-[#FBF7EE] p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8B1F18]">SVG stroke tool</p>
-          <h3 className="mt-1 text-2xl font-black">Gambar pola dari referensi</h3>
-          <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#4A3F37]/70">
-            Pakai pena bebas untuk gores cepat, atau Pen tool untuk klik titik jangkar. Hasil akhirnya tetap dirapikan jadi path SVG halus.
-          </p>
+      <div className="sticky top-2 z-10 -mx-4 -mt-4 mb-4 rounded-t-2xl border-b border-[#2A2520]/10 bg-[#FBF7EE]/95 px-4 py-3 backdrop-blur-md">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <p className="text-[0.66rem] font-black uppercase tracking-[0.16em] text-[#8B1F18]">SVG stroke tool</p>
+            <h3 className="mt-0.5 truncate text-base font-black text-[#2A2520]">
+              {aksara?.latin || aksara?.name || "Gambar pola dari referensi"}
+              <span className="ml-2 text-sm font-bold text-[#4A3F37]/55">
+                · {strokes.length} goresan
+              </span>
+            </h3>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={undoStroke}
+              disabled={(!strokes.length && !penPoints.length) || saving}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#2A2520]/12 bg-white px-3 text-xs font-black text-[#4A3F37] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+              Undo
+            </button>
+            <button
+              type="button"
+              onClick={clearStrokes}
+              disabled={(!strokes.length && !penPoints.length) || saving}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#2A2520]/12 bg-white px-3 text-xs font-black text-[#4A3F37] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Bersihkan
+            </button>
+            <button
+              type="button"
+              onClick={() => playAnimation(strokes)}
+              disabled={!strokes.length || saving || isTestingAnimation}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#8B1F18]/25 bg-white px-3 text-xs font-black text-[#8B1F18] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Play className="h-3.5 w-3.5" />
+              {isTestingAnimation ? "Memutar…" : "Tes"}
+            </button>
+            <button
+              type="button"
+              onClick={saveSvg}
+              disabled={!aksara?.id || !strokes.length || saving}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#8B1F18] px-4 text-xs font-black text-white shadow-[0_8px_18px_rgba(139,31,24,0.18)] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Save className="h-3.5 w-3.5" />
+              {saving ? "Menyimpan…" : "Simpan SVG"}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={undoStroke}
-            disabled={(!strokes.length && !penPoints.length) || saving}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#2A2520]/12 bg-white px-3 text-sm font-black text-[#4A3F37] disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            <Undo2 className="h-4 w-4" />
-            Undo
-          </button>
-          <button
-            type="button"
-            onClick={clearStrokes}
-            disabled={(!strokes.length && !penPoints.length) || saving}
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#2A2520]/12 bg-white px-3 text-sm font-black text-[#4A3F37] disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            <Trash2 className="h-4 w-4" />
-            Bersihkan
-          </button>
-        </div>
+        {message && (
+          <div className="mt-2 rounded-lg border border-[#2A2520]/10 bg-white px-3 py-1.5 text-xs font-bold text-[#4A3F37]">
+            <span className="inline-flex items-center gap-2">
+              {message.includes("tersimpan") ? <Check className="h-3.5 w-3.5 text-[#4A7C59]" /> : null}
+              {message}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 grid min-w-0 gap-4 2xl:grid-cols-[minmax(0,1fr)_280px]">
@@ -615,7 +652,7 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
                   d={strokePath(stroke, false)}
                   fill="none"
                   stroke="#2A2520"
-                  strokeWidth="4.8"
+                  strokeWidth={strokeWidth}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   opacity={isTestingAnimation ? 0.18 : 0.88}
@@ -626,7 +663,7 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
                   d={pointsToPath(activePoints)}
                   fill="none"
                   stroke="#8B1F18"
-                  strokeWidth="4.8"
+                  strokeWidth={strokeWidth}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -660,7 +697,7 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
                   className="svg-tool-test-stroke"
                   fill="none"
                   stroke="#8B1F18"
-                  strokeWidth="5.4"
+                  strokeWidth={strokeWidth * 1.125}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   style={{ animationDelay: `${index * 0.46}s` }}
@@ -719,6 +756,35 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
                 <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-[#4A3F37]/55">Target</p>
                 <p className="mt-1 text-2xl font-black text-[#8B1F18]">{aksara?.target_stroke_count || strokes.length || "-"}</p>
               </div>
+            </div>
+            <div className="mt-4 grid gap-2">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#4A3F37]/60">
+                  <Brush className="h-3.5 w-3.5" />
+                  Ketebalan
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-[#8B1F18]">{strokeWidth.toFixed(1)}</span>
+                  <button
+                    type="button"
+                    onClick={() => setStrokeWidth(DEFAULT_STROKE_WIDTH)}
+                    disabled={strokeWidth === DEFAULT_STROKE_WIDTH}
+                    className="text-[0.6rem] font-black uppercase tracking-widest text-[#4A3F37]/55 underline-offset-2 hover:text-[#8B1F18] hover:underline disabled:cursor-not-allowed disabled:opacity-30 disabled:no-underline"
+                    title={`Reset ke default (${DEFAULT_STROKE_WIDTH})`}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="1.5"
+                max="10"
+                step="0.2"
+                value={strokeWidth}
+                onChange={(event) => setStrokeWidth(Number(event.target.value))}
+                className="w-full accent-[#8B1F18]"
+              />
             </div>
             {toolMode === "pen" && (
               <div className="mt-3 rounded-xl border border-[#8B1F18]/12 bg-[#8B1F18]/5 p-3">
@@ -814,44 +880,6 @@ export function SvgStrokeTool({ aksara, disabled = false, saving = false, onSave
             </pre>
           </details>
 
-          <div className="grid min-w-0 gap-2">
-            <button
-              type="button"
-              onClick={() => playAnimation(strokes)}
-              disabled={!strokes.length || saving || isTestingAnimation}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#8B1F18]/25 bg-white px-4 text-sm font-black text-[#8B1F18] shadow-[0_8px_18px_rgba(42,37,32,0.04)] transition hover:border-[#8B1F18]/40 hover:bg-[#8B1F18]/10 disabled:cursor-not-allowed disabled:bg-[#FBF7EE] disabled:opacity-75"
-            >
-              <Play className="h-4 w-4" />
-              {isTestingAnimation ? "Memutar..." : "Tes animasi"}
-            </button>
-            <button
-              type="button"
-              onClick={saveSvg}
-              disabled={!aksara?.id || !strokes.length || saving}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#8B1F18] px-4 text-sm font-black text-white shadow-[0_12px_26px_rgba(139,31,24,0.16)] disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <Save className="h-4 w-4" />
-              Simpan SVG
-            </button>
-            <button
-              type="button"
-              onClick={clearStrokes}
-              disabled={(!strokes.length && !penPoints.length) || saving}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#2A2520]/12 bg-white px-4 text-sm font-black text-[#4A3F37] disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Ulangi pola
-            </button>
-          </div>
-
-          {message && (
-            <div className="rounded-2xl border border-[#2A2520]/10 bg-[#FBF7EE] px-4 py-3 text-sm font-bold leading-6 text-[#4A3F37]">
-              <span className="inline-flex items-center gap-2">
-                {message.includes("tersimpan") ? <Check className="h-4 w-4 text-[#4A7C59]" /> : null}
-                {message}
-              </span>
-            </div>
-          )}
         </aside>
       </div>
     </section>

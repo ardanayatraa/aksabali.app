@@ -5,15 +5,16 @@ import { redirectNonStudentFromStudentArea } from "../../../lib/server/access";
 import { getCurrentUser } from "../../../lib/server/auth";
 import { getPracticeAksara } from "../../../lib/server/data";
 import { loadPublicSvgPaths } from "../../../lib/server/svg";
+import { CP, glyph } from "../../../lib/aksara-codepoints";
 
 export const dynamic = "force-dynamic";
 
-const validModes = new Set(["nyurat", "kata", "huruf", "match", "maca", "kahoot"]);
+const validModes = new Set(["nyurat", "kata", "huruf", "match", "maca", "acak"]);
 const fallbackStrokeQuiz = {
   aksaraId: "gabungan-vokal-ki-1B13-1B36",
   name: "Ki",
   latin: "ki",
-  glyph: "ᬓᬶ",
+  glyph: glyph(CP.ka, CP.ulu),
   category: "gabungan-vokal",
   svgUrl: "/aksara/strokes/gabungan-vokal/ki-1B13-1B36.svg"
 };

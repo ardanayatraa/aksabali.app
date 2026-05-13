@@ -77,6 +77,63 @@
   box-sizing: border-box;
 }
 
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition-property: background-color, color, border-color, fill, stroke, box-shadow, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Promo banner — instant gate via CSS to prevent FOUC on dismissed visitors */
+html.promo-dismissed .promo-banner-wrap {
+  display: none !important;
+}
+html.promo-dismissed .promo-nav-with-banner {
+  top: 0 !important;
+}
+html.promo-dismissed .promo-main-with-banner {
+  padding-top: 6rem !important;
+}
+
+/* Custom scrollbar — Aksa Bali brand */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary) / 0.55) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.45);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+  transition: background-color 180ms ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.75);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--primary));
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -195,6 +252,12 @@ input {
   }
   100% {
     opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes aksa-draw {
+  to {
     stroke-dashoffset: 0;
   }
 }

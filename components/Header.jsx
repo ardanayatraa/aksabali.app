@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Gamepad2, LogIn } from "lucide-react";
+import { ArrowRight, LogIn } from "lucide-react";
 import { AksaraMark } from "./AksaraMark";
 
 const nav = [
@@ -27,17 +27,10 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="focus-ring hidden items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-rice/70 hover:text-brick sm:flex"
+            className="focus-ring inline-flex items-center gap-2 rounded-full bg-brick px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[0_10px_24px_hsl(var(--primary)/0.16)] transition hover:bg-brick/90"
           >
             <LogIn className="h-4 w-4" />
             Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="focus-ring inline-flex items-center gap-2 rounded-full bg-brick px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[0_10px_24px_hsl(var(--primary)/0.16)] transition hover:bg-brick/90"
-          >
-            <Gamepad2 className="h-4 w-4" />
-            Coba Gratis
             <ArrowRight className="hidden h-4 w-4 sm:block" />
           </Link>
         </div>

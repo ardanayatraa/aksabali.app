@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
+import { CP, glyph as aksaraGlyph } from "@/lib/aksara-codepoints";
 import {
   ArrowRight,
   BookOpenText,
@@ -94,7 +95,7 @@ export const Component = () => {
           <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
             <Link href="/" className="flex items-center gap-3">
               <span className="bali-text grid h-11 w-11 place-items-center rounded-full bg-primary text-2xl text-primary-foreground shadow-line">
-                ᬅ
+                {aksaraGlyph(CP.akara)}
               </span>
               <span className="leading-tight">
                 <span className="block font-display text-xl font-semibold text-foreground">
@@ -179,7 +180,7 @@ export const Component = () => {
                 <p className="text-sm font-bold text-muted-foreground">
                   Aksara yang sedang dilatih
                 </p>
-                <p className="bali-text my-5 text-8xl leading-none text-primary">ᬓ</p>
+                <p className="bali-text my-5 text-8xl leading-none text-primary">{aksaraGlyph(CP.ka)}</p>
                 <p className="text-2xl font-black text-foreground">Wianjana “Ka”</p>
                 <p className="mt-2 text-sm font-semibold text-muted-foreground">
                   Fokus: arah goresan dan proporsi bentuk
@@ -187,9 +188,9 @@ export const Component = () => {
               </div>
 
               <div className="mt-5 grid grid-cols-3 gap-3">
-                {["ᬓ", "ᬕ", "ᬗ"].map((glyph, index) => (
-                  <div key={glyph} className="rounded-lg border border-border bg-background/72 p-4 text-center">
-                    <p className="bali-text text-4xl text-foreground">{glyph}</p>
+                {[aksaraGlyph(CP.ka), aksaraGlyph(CP.ga), aksaraGlyph(CP.nga)].map((char, index) => (
+                  <div key={char} className="rounded-lg border border-border bg-background/72 p-4 text-center">
+                    <p className="bali-text text-4xl text-foreground">{char}</p>
                     <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
                       Level {index + 1}
                     </p>
@@ -203,7 +204,7 @@ export const Component = () => {
         <Footer
           logo={
             <span className="bali-text grid h-10 w-10 place-items-center rounded-full bg-primary text-xl text-primary-foreground shadow-line">
-              ᬅ
+              {aksaraGlyph(CP.akara)}
             </span>
           }
           brandName="Aksa Bali"

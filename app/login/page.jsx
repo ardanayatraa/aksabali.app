@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { AuthForm } from "../../components/AuthForm";
 import { AuthShell } from "../../components/AuthShell";
+import { GoogleLoginButton } from "../../components/GoogleLoginButton";
 
 export const dynamic = "force-dynamic";
 
@@ -9,13 +9,10 @@ export default function LoginPage() {
     <AuthShell
       eyebrow="Masuk"
       title="Masuk."
-      subtitle="Lanjutkan latihan dari akunmu."
-      switchText="Belum punya akun?"
-      switchHref="/register"
-      switchLabel="Buat akun"
+      subtitle="Khusus siswa & pelajar. Login pakai akun Google — akun baru otomatis dibuat."
     >
       <Suspense>
-        <AuthForm mode="login" />
+        <GoogleLoginButton next="/dashboard" />
       </Suspense>
     </AuthShell>
   );

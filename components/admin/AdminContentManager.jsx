@@ -8,6 +8,7 @@ import {
   CreditCard,
   Gamepad2,
   Layers,
+  PenTool,
   Pencil,
   Plus,
   Puzzle,
@@ -18,6 +19,10 @@ import {
   UsersRound
 } from "lucide-react";
 import { SvgStrokeTool } from "./SvgStrokeTool";
+import { UsersPanel } from "./UsersPanel";
+import { CP, glyph as aksaraGlyph } from "../../lib/aksara-codepoints";
+
+const GLYPH_PLACEHOLDER_KA = aksaraGlyph(CP.ka);
 
 const emptyForm = {
   id: "",
@@ -40,7 +45,7 @@ const quizModes = [
   ["huruf", "Tebak Huruf Bolak Balik", "Anacaraka, swara, dan angka dua arah."],
   ["match", "Pencocokan Kata", "Drag kata Latin ke kartu aksara."],
   ["maca", "Membaca Aksara Bali", "Baca aksara lalu jawab bacaan Latin."],
-  ["kahoot", "Mode Kahoot", "Soal acak dari semua bank kuis."]
+  ["acak", "Mode Acak", "Soal acak dari semua bank kuis."]
 ];
 
 function toForm(item) {
@@ -201,6 +206,7 @@ function SectionShell({ eyebrow, title, description, children }) {
 
 export function AdminContentManager({
   initialSection = "overview",
+  currentUserId = "",
   initialCategories = [],
   initialAksara = [],
   initialQuizGroups = [],
@@ -220,6 +226,7 @@ export function AdminContentManager({
   const [svgPreviewUrl, setSvgPreviewUrl] = useState("");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  const [contentTab, setContentTab] = useState("data");
 
   const selectedItem = useMemo(() => items.find((item) => item.id === form.id), [items, form.id]);
   const currentSvgUrl = svgPreviewUrl || form.svgUrl || selectedItem?.svg_url || "";
@@ -554,8 +561,36 @@ export function AdminContentManager({
               </button>
             </div>
 
+            {/* Sub-tabs: Data aksara vs Pola SVG */}
+            <div className="flex gap-1 border-b border-[#2A2520]/10 bg-[#FAFAF7] px-5 pt-3">
+              {[
+                { id: "data", label: "Data aksara", icon: Pencil },
+                { id: "tool", label: "Pola SVG", icon: PenTool }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const active = contentTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setContentTab(tab.id)}
+                    className={`inline-flex items-center gap-2 rounded-t-lg border border-b-0 px-4 py-2.5 text-xs font-black uppercase tracking-[0.12em] transition ${
+                      active
+                        ? "border-[#2A2520]/10 bg-white text-[#8B1F18]"
+                        : "border-transparent text-[#5F5850]/60 hover:text-[#8B1F18]"
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="grid xl:grid-cols-[minmax(0,1fr)_300px]">
               <div className="p-5">
+                {contentTab === "data" && (
+                <>
                 <div className="mb-5 grid gap-3 rounded border border-[#2A2520]/10 bg-[#FAFAF7] p-4 sm:grid-cols-[auto_1fr] sm:items-center">
                   <ListGlyphPreview glyph={form.glyph || selectedItem?.glyph || selectedItem?.char} />
                   <div className="min-w-0">
@@ -583,7 +618,7 @@ export function AdminContentManager({
                 <input className={inputClass()} value={form.name} onChange={(event) => setValue("name", event.target.value)} placeholder="Ki" required />
               </Field>
               <Field label="Aksara Bali">
-                <input className={`${inputClass()} bali-text text-3xl`} value={form.glyph} onChange={(event) => setValue("glyph", event.target.value)} placeholder="ᬓ" required />
+                <input className={`${inputClass()} bali-text text-3xl`} value={form.glyph} onChange={(event) => setValue("glyph", event.target.value)} placeholder={GLYPH_PLACEHOLDER_KA} required />
               </Field>
               <Field label="Latin">
                 <input className={inputClass()} value={form.latin} onChange={(event) => setValue("latin", event.target.value)} placeholder="ka" />
@@ -645,19 +680,38 @@ export function AdminContentManager({
                 Simpan aksara
               </button>
             </form>
+                </>
+                )}
 
-            {selectedItem ? (
-              <SvgStrokeTool
-                key={svgToolAksara?.id || "svg-tool-empty"}
-                aksara={svgToolAksara}
-                saving={saving}
-                onSave={saveGeneratedSvg}
-              />
-            ) : (
-              <div className="mt-5 rounded border border-dashed border-[#8B1F18]/25 bg-[#FAFAF7] p-5 text-sm font-bold leading-6 text-[#5F5850]">
-                Tool SVG aktif setelah aksara dipilih atau data baru disimpan.
-              </div>
-            )}
+                {contentTab === "tool" && (
+                  selectedItem ? (
+                    <SvgStrokeTool
+                      key={svgToolAksara?.id || "svg-tool-empty"}
+                      aksara={svgToolAksara}
+                      saving={saving}
+                      onSave={saveGeneratedSvg}
+                    />
+                  ) : (
+                    <div className="rounded border border-dashed border-[#8B1F18]/25 bg-[#FAFAF7] p-8 text-center">
+                      <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-[#8B1F18]/10 text-[#8B1F18]">
+                        <PenTool className="h-5 w-5" />
+                      </span>
+                      <p className="mt-4 text-sm font-bold text-[#25221E]">
+                        Pilih aksara dulu di daftar kiri.
+                      </p>
+                      <p className="mt-1 text-xs font-semibold leading-5 text-[#5F5850]/70">
+                        Atau bikin aksara baru dari tab {`"Data aksara"`}, simpan, lalu balik ke sini untuk gambar polanya.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setContentTab("data")}
+                        className="mt-4 inline-flex items-center gap-2 rounded border border-[#2A2520]/12 bg-white px-4 py-2 text-xs font-black text-[#5F5850] transition hover:border-[#8B1F18]/35 hover:text-[#8B1F18]"
+                      >
+                        Ke tab Data aksara
+                      </button>
+                    </div>
+                  )
+                )}
 
 
               </div>
@@ -698,7 +752,7 @@ export function AdminContentManager({
         <SectionShell
           eyebrow="Bank kuis"
           title="Sumber soal untuk semua mode."
-          description="Materi ini dipakai oleh kuis nyurat, tebak kata, tebak huruf, matching, membaca, dan mode Kahoot."
+          description="Materi ini dipakai oleh kuis nyurat, tebak kata, tebak huruf, matching, membaca, dan mode acak."
         >
           <div className="grid gap-4 lg:grid-cols-3">
             {quizModes.map(([id, name, description]) => (
@@ -737,22 +791,12 @@ export function AdminContentManager({
       )}
 
       {activeSection === "users" && (
-        <SectionShell eyebrow="Pengguna" title="Akun admin, guru, dan siswa." description="Pantau akun yang aktif, role, tier, dan tanggal pendaftaran.">
-          <div className="grid gap-3">
-            {initialUsers.map((user) => (
-              <div key={user.id} className="grid gap-3 rounded-2xl border border-[#2A2520]/10 bg-[#FBF7EE] p-4 md:grid-cols-[1fr_auto_auto] md:items-center">
-                <div>
-                  <p className="font-black">{user.display_name}</p>
-                  <p className="mt-1 text-sm font-semibold text-[#4A3F37]/65">{user.email}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Badge tone={user.role === "admin" ? "brick" : "neutral"}>{user.role}</Badge>
-                  <Badge tone={user.tier === "premium" ? "gold" : "neutral"}>{user.tier}</Badge>
-                </div>
-                <p className="text-sm font-semibold text-[#4A3F37]/60">{formatDate(user.created_at)}</p>
-              </div>
-            ))}
-          </div>
+        <SectionShell
+          eyebrow="Pengguna"
+          title="Akun admin, guru, dan siswa."
+          description="Ubah role atau suspend akun yang bermasalah. Perubahan langsung berlaku."
+        >
+          <UsersPanel initialUsers={initialUsers} currentUserId={currentUserId} />
         </SectionShell>
       )}
 
@@ -798,7 +842,7 @@ export function AdminContentManager({
       )}
 
       {activeSection === "game" && (
-        <SectionShell eyebrow="Game" title="Sesi kelas dan Kahoot." description="Pantau room game yang pernah dibuat, PIN, status, jumlah soal, dan pemain.">
+        <SectionShell eyebrow="Game" title="Sesi game kelas." description="Pantau room game yang pernah dibuat, PIN, status, jumlah soal, dan pemain.">
           <div className="grid gap-3">
             {initialGameSessions.length ? initialGameSessions.map((session) => (
               <div key={session.id} className="grid gap-3 rounded-2xl border border-[#2A2520]/10 bg-[#FBF7EE] p-4 lg:grid-cols-[1fr_auto_auto_auto] lg:items-center">

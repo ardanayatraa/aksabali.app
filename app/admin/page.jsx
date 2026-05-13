@@ -13,32 +13,32 @@ export const dynamic = "force-dynamic";
 const adminSections = new Set(["overview", "content", "quiz", "users", "activity", "game", "payments"]);
 const sectionMeta = {
   overview: {
-    title: "Ringkasan admin",
-    description: "Pantau status konten, pengguna, aktivitas belajar, game kelas, dan pembayaran."
+    title: "Ringkasan",
+    description: "Ringkasan singkat — siapa yang aktif, apa yang dipakai, sama berapa yang lulus."
   },
   content: {
     title: "Konten aksara",
-    description: "Kelola katalog aksara, SVG referensi, urutan materi, dan metadata latihan."
+    description: "Ngatur daftar aksara, pola goresnya, dan urutannya."
   },
   quiz: {
     title: "Bank kuis",
-    description: "Review sumber soal untuk kuis nyurat, membaca, tebak huruf, dan game kelas."
+    description: "Lihat soal-soal yang dipakai di kuis dan game kelas."
   },
   users: {
     title: "Pengguna",
-    description: "Pantau akun admin, guru, siswa, tier, dan aktivitas pendaftaran."
+    description: "Daftar akun yang ada — admin, guru, sama siswa."
   },
   activity: {
     title: "Aktivitas belajar",
-    description: "Lihat upaya stroke dan kuis terbaru untuk mengecek pemakaian aplikasi."
+    description: "Latihan dan kuis terbaru. Buat ngecek aplikasinya kepake atau enggak."
   },
   game: {
     title: "Game kelas",
-    description: "Pantau sesi Kahoot, host, PIN, jumlah soal, dan pemain."
+    description: "Sesi yang pernah dibuat — PIN, jumlah soal, sama siapa yang ikut."
   },
   payments: {
     title: "Pembayaran",
-    description: "Pantau transaksi paket premium dan status pembayaran pengguna."
+    description: "Riwayat transaksi Premium dan statusnya."
   }
 };
 
@@ -57,7 +57,7 @@ function serializeRows(rows) {
 function buildQuizGroups() {
   const labels = {
     anacaraka: "Aksara Anacaraka",
-    swara: "Swara AIUEO",
+    swara: "Pangangge Suara",
     angka: "Angka Bali",
     gabunganVokal: "Gabungan Vokal",
     kataAksara: "Kata Aksara"
@@ -100,7 +100,7 @@ export default async function AdminPage({ searchParams }) {
        ORDER BY category ASC, \`order\` ASC, name ASC`
     );
     users = await query(
-      `SELECT id, email, display_name, role, tier, created_at, updated_at
+      `SELECT id, email, display_name, role, tier, status, created_at, updated_at
        FROM profiles
        ORDER BY created_at DESC
        LIMIT 100`
@@ -185,6 +185,7 @@ export default async function AdminPage({ searchParams }) {
         <AdminContentManager
           key={initialSection}
           initialSection={initialSection}
+          currentUserId={user.id}
           initialCategories={serializeRows(categories)}
           initialAksara={serializeRows(aksara).map((item) => ({ ...item, is_premium: Boolean(item.is_premium) }))}
           initialQuizGroups={buildQuizGroups()}

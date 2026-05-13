@@ -119,7 +119,7 @@ export function AnimatedGridBackground({
           size={gridSize}
         />
       </motion.div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_12%,rgba(198,79,0,0.18),transparent_32%),radial-gradient(circle_at_5%_92%,rgba(248,210,196,0.36),transparent_34%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_12%,hsl(var(--primary)/0.16),transparent_32%),radial-gradient(circle_at_5%_92%,hsl(var(--accent)/0.30),transparent_34%)]" />
     </div>
   );
 }

@@ -1,22 +1,19 @@
-import { Suspense } from "react";
-import { AuthForm } from "../../components/AuthForm";
-import { AuthShell } from "../../components/AuthShell";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default function RegisterPage() {
-  return (
-    <AuthShell
-      eyebrow="Daftar"
-      title="Buat akun."
-      subtitle="Simpan progres latihanmu di sini."
-      switchText="Sudah punya akun?"
-      switchHref="/login"
-      switchLabel="Masuk"
-    >
-      <Suspense>
-        <AuthForm mode="register" />
-      </Suspense>
-    </AuthShell>
-  );
+// Register manual dimatikan — semua jalur daftar/masuk pakai Google di /login.
+// Query param dilanjut biar konteks (mis. ?promo=only25k) tetap nyampai.
+export default async function RegisterPage({ searchParams }) {
+  const params = await searchParams;
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params || {})) {
+    if (Array.isArray(value)) {
+      value.forEach((v) => qs.append(key, v));
+    } else if (value != null) {
+      qs.set(key, String(value));
+    }
+  }
+  const query = qs.toString();
+  redirect(query ? `/login?${query}` : "/login");
 }

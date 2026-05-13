@@ -254,7 +254,7 @@ export function GameLiveClient({ initialSession = null, user }) {
                     disabled={loading || Boolean(result)}
                     className={`min-h-24 rounded-[1.25rem] border px-5 py-4 text-left text-2xl font-black transition ${optionClass({ option, selected, result })}`}
                   >
-                    <span className={/[ᬀ-᭿]/.test(option) ? "bali-text text-5xl" : ""}>{option}</span>
+                    <span className={/[\u{1B00}-\u{1B7F}]/u.test(option) ? "bali-text text-5xl" : ""}>{option}</span>
                     {result?.correctOption === option && <Check className="mt-2 h-5 w-5 text-[#4A7C59]" />}
                     {result && selected === option && result.correctOption !== option && <X className="mt-2 h-5 w-5 text-destructive" />}
                   </button>

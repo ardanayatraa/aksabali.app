@@ -1,9 +1,11 @@
 import { AppShell } from "../../../components/AppShell";
+import { PracticeCatalogGrid } from "../../../components/PracticeCatalogGrid";
 import { PracticeIndex } from "../../../components/PracticeIndex";
 import { redirectNonStudentFromStudentArea } from "../../../lib/server/access";
 import { getCurrentUser } from "../../../lib/server/auth";
 import { getPracticeCatalog } from "../../../lib/server/data";
 import { ProductionConfigError } from "../../../lib/server/env";
+import { CP, glyph } from "../../../lib/aksara-codepoints";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,7 @@ const fallbackCatalog = [
   {
     id: "gabungan-vokal-ki-1B13-1B36",
     name: "Ki",
-    glyph: "ᬓᬶ",
+    glyph: glyph(CP.ka, CP.ulu),
     latin: "ki",
     category: "gabungan-vokal",
     is_premium: false,
@@ -48,6 +50,7 @@ export default async function LatihanNyuratPage() {
         title="Pilih aksara untuk ditulis."
         description="Masuk ke kanvas, ikuti bentuk aksara, lalu biarkan stroke recognition menilai arah dan posisi goresan."
       />
+      <PracticeCatalogGrid catalog={catalog} basePath="/latihan" />
     </AppShell>
   );
 }
