@@ -1,3 +1,4 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 import { BookOpenText, CreditCard, Gamepad2, Sparkles, UserCheck, Users, UserX } from 'lucide-react';
@@ -53,8 +54,12 @@ export default function AdminDashboard({ stats, recentUsers, siteMode }: Props) 
         <AdminLayout>
             <Head title="Admin Dashboard — Aksa Bali" />
 
-            <h1 className="font-display text-3xl font-semibold tracking-tight">Ringkasan platform</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <AdminPageHeader
+                title="Ringkasan"
+                description="Ringkasan singkat — siapa yang aktif, apa yang dipakai, sama berapa yang lulus."
+            />
+
+            <p className="-mt-2 mb-6 text-sm text-muted-foreground">
                 Site mode:{' '}
                 <span className={`font-bold ${siteMode === 'live' ? 'text-emerald-600' : 'text-amber-600'}`}>{siteMode}</span>.{' '}
                 <Link href={route('admin.settings')} className="font-bold text-primary hover:underline">
@@ -62,7 +67,7 @@ export default function AdminDashboard({ stats, recentUsers, siteMode }: Props) 
                 </Link>
             </p>
 
-            <div className="mt-6 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                 {tiles.map((tile) => {
                     const Icon = tile.icon;
                     return (

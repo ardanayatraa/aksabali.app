@@ -1,3 +1,4 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import { AksaraStrokePreview } from '@/components/aksara-stroke-preview';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, router } from '@inertiajs/react';
@@ -59,18 +60,21 @@ export default function AdminAksaraIndex({ aksara, categories, filters }: Props)
         <AdminLayout>
             <Head title="Aksara Catalog — Admin" />
 
-            <div className="flex flex-wrap items-end justify-between gap-3">
-                <h1 className="font-display text-3xl font-semibold tracking-tight">Aksara catalog</h1>
-                <Link
-                    href={route('admin.aksara.create')}
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
-                >
-                    <Plus className="h-4 w-4" />
-                    Tambah
-                </Link>
-            </div>
+            <AdminPageHeader
+                title="Konten aksara"
+                description="Ngatur daftar aksara, pola goresnya, dan urutannya."
+                actions={
+                    <Link
+                        href={route('admin.aksara.create')}
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Tambah
+                    </Link>
+                }
+            />
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
                 <form onSubmit={submitSearch} className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input

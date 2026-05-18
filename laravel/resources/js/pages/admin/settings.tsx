@@ -1,6 +1,7 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle, Save } from 'lucide-react';
+import { LoaderCircle, Save, Settings } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 interface Props {
@@ -43,12 +44,14 @@ export default function AdminSettings({ siteMode, launchAt, modes }: Props) {
         <AdminLayout>
             <Head title="Pengaturan — Admin" />
 
-            <h1 className="font-display text-3xl font-semibold tracking-tight">Site mode</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-                Cache 5 detik — efek perubahan hampir-langsung.
-            </p>
+            <AdminPageHeader
+                title="Site mode"
+                description="Atur perilaku platform secara global. Cache 5 detik — efek perubahan hampir-langsung."
+                eyebrow="Pengaturan"
+                icon={Settings}
+            />
 
-            <form onSubmit={submit} className="mt-6 max-w-3xl">
+            <form onSubmit={submit} className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Mode</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     {modes.map((m) => {
