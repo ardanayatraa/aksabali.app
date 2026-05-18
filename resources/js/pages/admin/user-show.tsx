@@ -1,3 +1,4 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle2, Sparkles, UserCheck, UserRound, UserX, XCircle } from 'lucide-react';
@@ -57,44 +58,50 @@ export default function UserShow({ user, strokeAttempts, quizAttempts, strokeSta
 
             <Link
                 href={route('admin.users')}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-primary"
+                className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-primary"
             >
                 <ArrowLeft className="h-4 w-4" />
                 Kembali ke daftar pengguna
             </Link>
 
-            <div className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
-                <div className="flex items-center gap-4">
-                    {user.avatar_url ? (
-                        <img src={user.avatar_url} alt="" referrerPolicy="no-referrer" className="h-16 w-16 rounded-full" />
-                    ) : (
-                        <div className="grid h-16 w-16 place-items-center rounded-full bg-primary/10 text-primary">
-                            <UserRound className="h-8 w-8" />
-                        </div>
-                    )}
-                    <div>
-                        <h1 className="font-display text-3xl font-semibold tracking-tight">{user.name}</h1>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
-                        <p className="text-xs text-muted-foreground">Bergabung {fmtDate(user.created_at)}</p>
+            <AdminPageHeader
+                title={user.name || 'Detail pengguna'}
+                description={`${user.email} · Bergabung ${fmtDate(user.created_at)}`}
+                eyebrow="Detail pengguna"
+                icon={UserRound}
+                actions={
+                    <div className="flex flex-wrap items-center gap-3 text-xs">
+                        <span className="font-bold uppercase tracking-wider text-muted-foreground">{user.role}</span>
+                        <span
+                            className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider ${
+                                user.tier === 'premium' || user.tier === 'lite' ? 'text-amber-600' : 'text-muted-foreground'
+                            }`}
+                        >
+                            <Sparkles className="h-3 w-3" /> {user.tier}
+                        </span>
+                        <span
+                            className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider ${
+                                user.status === 'suspended' ? 'text-destructive' : 'text-emerald-600'
+                            }`}
+                        >
+                            {user.status === 'suspended' ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                            {user.status}
+                        </span>
                     </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-3 text-xs">
-                    <span className="font-bold uppercase tracking-wider text-muted-foreground">{user.role}</span>
-                    <span
-                        className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider ${
-                            user.tier === 'premium' || user.tier === 'lite' ? 'text-amber-600' : 'text-muted-foreground'
-                        }`}
-                    >
-                        <Sparkles className="h-3 w-3" /> {user.tier}
-                    </span>
-                    <span
-                        className={`inline-flex items-center gap-1 font-bold uppercase tracking-wider ${
-                            user.status === 'suspended' ? 'text-destructive' : 'text-emerald-600'
-                        }`}
-                    >
-                        {user.status === 'suspended' ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
-                        {user.status}
-                    </span>
+                }
+            />
+
+            <div className="mb-6 flex items-center gap-4">
+                {user.avatar_url ? (
+                    <img src={user.avatar_url} alt="" referrerPolicy="no-referrer" className="h-14 w-14 rounded-full" />
+                ) : (
+                    <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
+                        <UserRound className="h-7 w-7" />
+                    </div>
+                )}
+                <div>
+                    <p className="text-sm font-bold">{user.display_name || user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
             </div>
 

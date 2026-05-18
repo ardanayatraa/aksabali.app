@@ -1,7 +1,8 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import { AksaraStrokePreview } from '@/components/aksara-stroke-preview';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, LoaderCircle, Save } from 'lucide-react';
+import { ArrowLeft, BookOpenText, LoaderCircle, Save } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 interface AksaraInput {
@@ -61,17 +62,24 @@ export default function AdminAksaraEdit({ aksara, categories }: Props) {
 
             <Link
                 href={route('admin.aksara.index')}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-primary"
+                className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-primary"
             >
                 <ArrowLeft className="h-4 w-4" />
                 Kembali ke catalog
             </Link>
 
-            <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight">
-                {isNew ? 'Aksara baru' : aksara!.name}
-            </h1>
+            <AdminPageHeader
+                title={isNew ? 'Aksara baru' : aksara!.name}
+                description={
+                    isNew
+                        ? 'Tambah aksara baru ke catalog — isi metadata + SVG referensi.'
+                        : 'Edit metadata + SVG referensi. Preview goresan tampil di samping.'
+                }
+                eyebrow={isNew ? 'Tambah aksara' : 'Edit aksara'}
+                icon={BookOpenText}
+            />
 
-            <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_240px]">
+            <div className="grid gap-8 lg:grid-cols-[1fr_240px]">
                 <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">
                     <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">ID slug</label>

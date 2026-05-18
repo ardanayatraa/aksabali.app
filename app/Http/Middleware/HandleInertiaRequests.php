@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Aksara;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -61,6 +64,13 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
+            // Stats global untuk header admin (Kategori/Aksara/Akun) — sama dgn admin page Next.js.
+            // Lazy-load: hanya di-eval kalau halaman admin yg minta props ini.
+            'adminStats' => fn () => $user && $user->role === 'admin' && str_starts_with($request->path(), 'admin') ? [
+                'categories' => Category::count(),
+                'aksara' => Aksara::count(),
+                'users' => User::count(),
+            ] : null,
         ]);
     }
 }

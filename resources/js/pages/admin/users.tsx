@@ -1,3 +1,4 @@
+import { AdminPageHeader } from '@/components/admin-page-header';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { Search, UserCheck, UserX } from 'lucide-react';
@@ -59,9 +60,12 @@ export default function AdminUsers({ users, filters }: Props) {
         <AdminLayout>
             <Head title="Pengguna — Admin" />
 
-            <h1 className="font-display text-3xl font-semibold tracking-tight">Kelola akun</h1>
+            <AdminPageHeader
+                title="Pengguna"
+                description="Daftar akun yang ada — admin, guru, sama siswa."
+            />
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                 <form onSubmit={submitSearch} className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input

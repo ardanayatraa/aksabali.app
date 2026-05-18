@@ -21,10 +21,18 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface AdminStats {
+    categories: number;
+    aksara: number;
+    users: number;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    /** Stats global admin (Kategori/Aksara/Akun) — di-share via HandleInertiaRequests untuk halaman /admin/*. */
+    adminStats?: AdminStats | null;
     [key: string]: unknown;
 }
 
