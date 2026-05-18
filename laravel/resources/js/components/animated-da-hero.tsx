@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 const PATH_D_RE = /<path[^>]*\sd\s*=\s*"([^"]+)"/gi;
 const VIEWBOX_RE = /viewBox\s*=\s*"([^"]+)"/i;
-const STROKE_DURATION = 2.0; // detik per stroke
-const STROKE_DELAY = 2.4; // jeda antar stroke
-const HOLD = 1.4; // tahan setelah selesai sebelum reset
+const STROKE_DURATION = 3.5; // detik per stroke — lebih lambat biar smooth, ga buru-buru
+const STROKE_DELAY = 4.0; // jeda antar stroke — match dgn durasi + sedikit pause
+const HOLD = 2.5; // tahan setelah selesai sebelum reset — beri nafas
 
 interface Props {
     /** Path SVG referensi. Default: aksara Da. */
@@ -107,7 +107,8 @@ export function AnimatedDaHero({ svgUrl = '/aksara/strokes/anacaraka/da-1B24.svg
                         strokeDasharray={1}
                         strokeDashoffset={1}
                         style={{
-                            animation: `aksa-draw ${STROKE_DURATION}s ease-out ${i * STROKE_DELAY}s forwards`,
+                            // cubic-bezier custom — kurva smooth (slow start + ease out gentle)
+                            animation: `aksa-draw ${STROKE_DURATION}s cubic-bezier(0.65, 0, 0.35, 1) ${i * STROKE_DELAY}s forwards`,
                         }}
                     />
                 ))}

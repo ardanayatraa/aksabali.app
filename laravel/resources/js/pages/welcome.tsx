@@ -195,7 +195,7 @@ export default function Welcome() {
                             <div className="relative order-first min-w-0 lg:order-none">
                                 <div className="relative mx-auto flex aspect-square w-full max-w-[342px] items-center justify-center overflow-hidden rounded-[28px] bg-gradient-to-br from-muted to-secondary shadow-[0_1px_2px_hsl(var(--foreground)/0.05),0_24px_60px_hsl(var(--primary)/0.10)] sm:max-w-[480px]">
                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,hsl(var(--primary)/0.12),transparent_55%),radial-gradient(circle_at_75%_75%,hsl(var(--tertiary)/0.08),transparent_55%)]" />
-                                    <div className="relative z-10 h-[68%] w-[68%] animate-[float_6s_ease-in-out_infinite]">
+                                    <div className="relative z-10 h-[68%] w-[68%] animate-[float_8s_cubic-bezier(0.45,0,0.55,1)_infinite]">
                                         <AnimatedDaHero />
                                     </div>
                                 </div>

@@ -6,8 +6,8 @@ const averageScore = (metrics: StrokeMetric[]): number => {
     return Math.round(metrics.reduce((sum, metric) => sum + metric.score, 0) / metrics.length);
 };
 
-const HINT_DRAW_DURATION_MS = 1250;
-const HINT_VISIBLE_MS = 1700;
+const HINT_DRAW_DURATION_MS = 1800; // match dgn @keyframes draw-stroke di app.css
+const HINT_VISIBLE_MS = 2400; // beri waktu cukup buat user lihat hint sebelum hilang
 
 export type StrokeStatus = 'correct' | 'correctAfterMiss' | 'wrong' | 'hint';
 
