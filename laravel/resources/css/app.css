@@ -357,8 +357,14 @@ html {
     stroke-width: 0.45;
 }
 
+/* Stroke yg user gores dgn benar — animate-draw ringan biar gampang dilihat
+ * goresan terisi pelan-pelan, bukan langsung muncul. Pakai pathLength=1
+ * (di-set di komponen) supaya stroke-dasharray:1 ini valid lintas SVG path. */
 .correct-stroke {
     stroke: hsl(var(--foreground));
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-stroke 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 .wrong-stroke-fade {

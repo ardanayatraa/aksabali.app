@@ -263,7 +263,19 @@ export function useStrokeRecognizer({
             const previous = activePoints.current[activePoints.current.length - 1];
             if (previous && Math.hypot(point.x - previous.x, point.y - previous.y) < 0.35) return;
             activePoints.current.push(point);
-            activePathData.current += ` L${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+
+            // Smooth path rendering: pakai quadratic Bezier (Q) dgn previous-point sbg
+            // control + midpoint sbg endpoint. Hasil: garis kelihatan halus (no jagged
+            // corners) walau user gerak cepat, sementara `activePoints` tetap raw buat
+            // evaluasi metrik bentuk/arah/dll. Point pertama tetep pakai L biar gak ada
+            // gap dari M.
+            if (activePoints.current.length === 2 && previous) {
+                activePathData.current += ` L${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+            } else if (previous) {
+                const midX = (previous.x + point.x) / 2;
+                const midY = (previous.y + point.y) / 2;
+                activePathData.current += ` Q${previous.x.toFixed(2)},${previous.y.toFixed(2)} ${midX.toFixed(2)},${midY.toFixed(2)}`;
+            }
             if (activeStrokeRef.current) activeStrokeRef.current.setAttribute('d', activePathData.current);
         },
         [getSVGPoint, isDemoing, isPalmLikeInput],

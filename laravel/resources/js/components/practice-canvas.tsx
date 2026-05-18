@@ -147,7 +147,12 @@ export function PracticeCanvas({ aksaraId, glyph = '', label = 'aksara', referen
                     </g>
                     <g pointerEvents="none">
                         {referencePaths.map((d, index) => {
-                            const shouldShow = isDemoing || isFinished || index === currentStrokeIdx;
+                            // Kalau finished, jangan render referensi — userStrokes udah cover
+                            // semua stroke; reference rendering bikin "numpuk" tumpuk di atas
+                            // userStrokes. Selama latihan, hanya stroke aktif (yellow) +
+                            // selama demo mode juga semua reference (sebagai panduan).
+                            if (isFinished) return null;
+                            const shouldShow = isDemoing || index === currentStrokeIdx;
                             return shouldShow ? (
                                 <path
                                     key={`ref-${d}`}
