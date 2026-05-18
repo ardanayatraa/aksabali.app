@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureActive;
+use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureStudent;
+use App\Http\Middleware\EnsureTeacher;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,6 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            EnsureActive::class,
+        ]);
+
+        $middleware->alias([
+            'admin' => EnsureAdmin::class,
+            'teacher' => EnsureTeacher::class,
+            'student' => EnsureStudent::class,
+            'active' => EnsureActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
