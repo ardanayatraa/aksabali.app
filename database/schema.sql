@@ -13,17 +13,19 @@ CREATE TABLE IF NOT EXISTS profiles (
   display_name VARCHAR(255) NOT NULL,
   role ENUM('user', 'admin', 'siswa', 'pengajar') NOT NULL DEFAULT 'siswa',
   tier ENUM('free', 'lite', 'premium') NOT NULL DEFAULT 'free',
+  status ENUM('active', 'suspended') NOT NULL DEFAULT 'active',
   email_verified_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_profiles_role (role),
-  INDEX idx_profiles_tier (tier)
+  INDEX idx_profiles_tier (tier),
+  INDEX idx_profiles_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE profiles
   MODIFY role ENUM('user', 'admin', 'siswa', 'pengajar') NOT NULL DEFAULT 'siswa';
--- NOTE: kolom `status` (ENUM active|suspended) ditangani via ensureColumn() di scripts/migrate.cjs
--- karena MySQL versi tertentu nggak dukung ADD COLUMN IF NOT EXISTS.
+-- Catatan: kolom `status` di-CREATE inline di atas. Untuk DB existing yang
+-- belum punya kolom ini, scripts/migrate.cjs juga punya ensureColumn fallback.
 
 CREATE TABLE IF NOT EXISTS user_credentials (
   user_id VARCHAR(64) PRIMARY KEY,
