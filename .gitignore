@@ -5,10 +5,9 @@ coverage/
 .env
 .env*.local
 
-# Mobile app — di-track di repo terpisah (aksabalimobile)
-# Pakai /mobile/ supaya cuma top-level yg ke-ignore. Nested folder seperti
-# laravel/app/Http/Controllers/Mobile/ tidak ke-match (case-insensitive di Windows).
-/mobile/
+# Mobile app — submodule terpisah (aksabalimobile repo).
+# Folder /mobile/ track sbg git submodule, lihat .gitmodules.
+# Konten ada di repo sendiri, di sini cuma pointer commit.
 .next-dev-*.log
 .next-dev-*.err.log
 .next-prod-*.log
