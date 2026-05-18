@@ -4,11 +4,15 @@ import { CP, glyph } from '@/lib/aksara-codepoints';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import {
+    Activity,
     BookOpenText,
+    CreditCard,
     ExternalLink,
+    Gamepad2,
     LayoutDashboard,
     LogOut,
     type LucideIcon,
+    Puzzle,
     Settings,
     Sparkles,
     UserRound,
@@ -28,6 +32,10 @@ const adminNav: NavItem[] = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, match: '/admin', exact: true },
     { href: '/admin/users', label: 'Pengguna', icon: Users, match: '/admin/users' },
     { href: '/admin/aksara', label: 'Aksara', icon: BookOpenText, match: '/admin/aksara' },
+    { href: '/admin/quiz-bank', label: 'Bank kuis', icon: Puzzle, match: '/admin/quiz-bank' },
+    { href: '/admin/activity', label: 'Aktivitas', icon: Activity, match: '/admin/activity' },
+    { href: '/admin/game', label: 'Game kelas', icon: Gamepad2, match: '/admin/game' },
+    { href: '/admin/payments', label: 'Pembayaran', icon: CreditCard, match: '/admin/payments' },
     { href: '/admin/settings', label: 'Pengaturan', icon: Settings, match: '/admin/settings' },
 ];
 

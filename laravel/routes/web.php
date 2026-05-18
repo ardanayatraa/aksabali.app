@@ -90,6 +90,12 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
         Route::post('users/{user}/tier', [AdminController::class, 'updateTier'])->name('users.tier');
 
+        // Riwayat aktivitas, sesi game, pembayaran, bank kuis — match Next.js admin sections.
+        Route::get('activity', [AdminController::class, 'activity'])->name('activity');
+        Route::get('game', [AdminController::class, 'gameSessions'])->name('game');
+        Route::get('payments', [AdminController::class, 'payments'])->name('payments');
+        Route::get('quiz-bank', [AdminController::class, 'quizBank'])->name('quiz-bank');
+
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
         Route::post('settings/site-mode', [AdminController::class, 'updateSiteMode'])->name('settings.site-mode');
 
