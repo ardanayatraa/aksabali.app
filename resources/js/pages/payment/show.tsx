@@ -100,8 +100,8 @@ export default function PaymentShow({ transaction: initialTx, snap }: Props) {
                 onError: () => setError('Pembayaran gagal. Coba lagi.'),
                 onClose: () => pollStatus(),
             });
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Tidak bisa load Snap.');
+        } catch {
+            setError('Tidak bisa load checkout Midtrans. Cek koneksi lalu refresh halaman.');
         }
     };
 

@@ -91,12 +91,13 @@ export function PracticeCanvas({ aksaraId, glyph = '', label = 'aksara', referen
                     }),
                 });
                 if (!response.ok) {
-                    const payload = await response.json().catch(() => ({}));
-                    throw new Error((payload as { error?: string })?.error ?? 'Gagal menyimpan hasil.');
+                    setSaveStatus('Hasil belum tersimpan. Pastikan kamu masih login.');
+                    return;
                 }
                 setSaveStatus('Hasil stroke tersimpan.');
-            } catch (error) {
-                setSaveStatus(error instanceof Error ? error.message : 'Hasil belum tersimpan.');
+            } catch {
+                // Network error / offline — softer copy, no raw "Failed to fetch"
+                setSaveStatus('Hasil belum tersimpan. Cek koneksi lalu coba lagi.');
             }
         },
     });

@@ -5,7 +5,7 @@ import { PromoBanner } from '@/components/promo-banner';
 import { CP, glyph } from '@/lib/aksara-codepoints';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Check, Facebook, Instagram, Mail, Youtube } from 'lucide-react';
+import { AlertTriangle, Check, Facebook, Instagram, Mail, Youtube } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const aksaraTiles = [
@@ -444,7 +444,10 @@ export default function Welcome() {
                                 </div>
 
                                 <div className="rounded-[20px] border-2 border-primary/30 bg-primary/5 p-6">
-                                    <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary">⚠ Situs resmi</p>
+                                    <p className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-primary">
+                                        <AlertTriangle className="h-3.5 w-3.5" />
+                                        Situs resmi
+                                    </p>
                                     <p className="mt-3 text-[15px] leading-[1.65] text-foreground">
                                         Aksa Bali resmi <strong className="font-extrabold">hanya</strong> di{' '}
                                         <a
