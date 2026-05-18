@@ -115,14 +115,12 @@ export default function Welcome() {
                 {/* Subtle radial bg */}
                 <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_20%_30%,hsl(var(--tertiary)/0.05),transparent_40%),radial-gradient(circle_at_80%_70%,hsl(var(--primary)/0.06),transparent_42%)]" />
 
-                {/* Promo banner — dismissible via localStorage */}
-                <div className="relative z-50">
-                    <PromoBanner />
-                </div>
+                {/* Promo banner — dismissible via localStorage, fixed top z-50 */}
+                <PromoBanner />
 
-                {/* NAV */}
+                {/* NAV — base top-0, di-push down ke top-11 saat html.promo-visible (lihat app.css) */}
                 <nav
-                    className={`fixed inset-x-0 top-0 z-40 border-b transition-all duration-500 ease-out ${
+                    className={`promo-nav-with-banner fixed inset-x-0 top-0 z-40 border-b transition-all duration-500 ease-out ${
                         isScrolled
                             ? 'border-border bg-background/75 shadow-[0_12px_35px_hsl(var(--foreground)/0.08)] backdrop-blur-2xl'
                             : 'border-border/60 bg-background/90 backdrop-blur-md'
@@ -162,7 +160,7 @@ export default function Welcome() {
                     </div>
                 </nav>
 
-                <main className="relative z-10 pt-24">
+                <main className="promo-main-with-banner relative z-10 pt-24">
                     {/* HERO */}
                     <section className="mx-auto w-screen max-w-[1180px] overflow-hidden px-6 py-14 sm:py-20 lg:py-24">
                         <div className="grid min-w-0 items-center gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
