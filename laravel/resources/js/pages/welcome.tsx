@@ -1,4 +1,6 @@
+import { AnimatedGridBackground } from '@/components/animated-grid-background';
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
+import { PromoBanner } from '@/components/promo-banner';
 import { CP, glyph } from '@/lib/aksara-codepoints';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -107,8 +109,16 @@ export default function Welcome() {
             </Head>
 
             <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+                {/* Animated grid background */}
+                <AnimatedGridBackground className="fixed inset-0 z-0 opacity-80" gridSize={44} />
+
                 {/* Subtle radial bg */}
                 <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_20%_30%,hsl(var(--tertiary)/0.05),transparent_40%),radial-gradient(circle_at_80%_70%,hsl(var(--primary)/0.06),transparent_42%)]" />
+
+                {/* Promo banner — dismissible via localStorage */}
+                <div className="relative z-50">
+                    <PromoBanner />
+                </div>
 
                 {/* NAV */}
                 <nav

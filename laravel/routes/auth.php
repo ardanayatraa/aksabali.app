@@ -20,10 +20,13 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    // Login form POST — throttled 5x per menit per IP (default login route disabled tapi defensive).
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:5,1');
 
-    // Google OAuth — entrypoint utama login Aksa Bali
+    // Google OAuth — throttle redirect untuk hindari abuse Socialite state.
     Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirect'])
+        ->middleware('throttle:20,1')
         ->name('auth.google.redirect');
     Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
         ->name('auth.google.callback');
@@ -32,12 +35,14 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('password.store');
 });
 

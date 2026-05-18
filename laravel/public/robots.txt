@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /payment/
+Disallow: /strokes/
+Disallow: /settings
+Disallow: /dashboard
+Disallow: /game/host
+
+Sitemap: https://aksabali.app/sitemap.xml

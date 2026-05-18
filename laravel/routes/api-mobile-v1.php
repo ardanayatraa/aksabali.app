@@ -13,15 +13,19 @@ use App\Http\Controllers\Mobile\StrokeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('mobile/v1')->name('mobile.v1.')->group(function () {
-    // Public — Google sign-in.
-    Route::post('auth/google', [AuthController::class, 'googleExchange'])->name('auth.google');
+    // Public — Google sign-in. Throttle 10/menit per IP supaya ga di-brute-force.
+    Route::post('auth/google', [AuthController::class, 'googleExchange'])
+        ->middleware('throttle:10,1')
+        ->name('auth.google');
 
-    // Catalog publik (premium content tetap masuk, mobile client yang lock UI).
-    Route::get('catalog', [CatalogController::class, 'index'])->name('catalog');
-    Route::get('catalog/{aksaraId}', [CatalogController::class, 'show'])->name('catalog.show');
+    // Catalog publik — throttle ringan untuk hindari scraping massal.
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('catalog', [CatalogController::class, 'index'])->name('catalog');
+        Route::get('catalog/{aksaraId}', [CatalogController::class, 'show'])->name('catalog.show');
+    });
 
-    // Authenticated (Sanctum bearer).
-    Route::middleware('auth:sanctum')->group(function () {
+    // Authenticated (Sanctum bearer) — throttle generous tapi tetap ada batas.
+    Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
