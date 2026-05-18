@@ -1,5 +1,9 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 /** @type {import('next').NextConfig} */
 const isDev = process.env.NODE_ENV !== "production";
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -43,6 +47,11 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
+  // Turbopack workspace inference confused karena ada laravel/package.json di
+  // subfolder — pin root explicitly biar gak salah deteksi.
+  turbopack: {
+    root: projectRoot
+  },
   async headers() {
     return [
       {
