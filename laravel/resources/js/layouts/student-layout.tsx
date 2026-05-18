@@ -1,8 +1,8 @@
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 import { CP, glyph } from '@/lib/aksara-codepoints';
-import { type SharedData } from '@/types';
+import { type SharedData, type User } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { LayoutDashboard, LogOut, NotebookPen, Sparkles, UserRound } from 'lucide-react';
+import { LayoutDashboard, LogOut, NotebookPen, Shield, Sparkles, UserRound } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 
 const navItems = [
@@ -65,6 +65,16 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
                         })}
                     </nav>
                     <div className="flex items-center gap-2">
+                        {/* Admin shortcut — admin masuk dashboard siswa tetap bisa balik ke /admin */}
+                        {(user as User | undefined)?.role === 'admin' && (
+                            <Link
+                                href="/admin"
+                                className="hidden items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/10 sm:inline-flex"
+                            >
+                                <Shield className="h-3.5 w-3.5" />
+                                Admin
+                            </Link>
+                        )}
                         <AppearanceToggleDropdown />
                         {user ? (
                             <div className="flex items-center gap-2">

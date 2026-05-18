@@ -81,6 +81,9 @@ function MultipleChoiceEngine({ mode, catalog }: { mode: string; catalog: Aksara
     const [picked, setPicked] = useState<string | null>(null);
     const [correct, setCorrect] = useState(0);
     const [done, setDone] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const startTimeRef = useRef(Date.now());
+    const answersRef = useRef<{ q: string; picked: string; correct: string; isCorrect: boolean }[]>([]);
 
     const reset = () => {
         setSeed((s) => s + 1);
@@ -88,21 +91,66 @@ function MultipleChoiceEngine({ mode, catalog }: { mode: string; catalog: Aksara
         setPicked(null);
         setCorrect(0);
         setDone(false);
+        setSaved(false);
+        startTimeRef.current = Date.now();
+        answersRef.current = [];
     };
 
     const handlePick = (opt: string) => {
         if (picked) return;
         setPicked(opt);
-        if (opt === questions[currentIdx]?.answer) setCorrect((c) => c + 1);
+        const q = questions[currentIdx];
+        const isCorrect = opt === q?.answer;
+        if (isCorrect) setCorrect((c) => c + 1);
+        answersRef.current.push({
+            q: q.direction === 'aksara-to-latin' ? (q.aksara.char ?? '') : q.aksara.latin,
+            picked: opt,
+            correct: q.answer,
+            isCorrect,
+        });
     };
 
     const handleNext = () => {
-        if (currentIdx + 1 >= questions.length) setDone(true);
-        else {
+        if (currentIdx + 1 >= questions.length) {
+            setDone(true);
+        } else {
             setCurrentIdx((i) => i + 1);
             setPicked(null);
         }
     };
+
+    // Auto-save attempt saat done (one-shot).
+    useEffect(() => {
+        if (!done || saved || questions.length === 0) return;
+        const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
+        const score = Math.round((correct / questions.length) * 100);
+        const passed = score >= 70;
+        const tokenEl = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
+        const csrf = tokenEl?.content ?? '';
+        fetch('/quiz/attempts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                Accept: 'application/json',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                mode,
+                category: 'semua',
+                correct_count: correct,
+                total_count: questions.length,
+                score,
+                passed,
+                duration_seconds: duration,
+                answers: answersRef.current,
+            }),
+        })
+            .then(() => setSaved(true))
+            .catch(() => {
+                /* diam, retry on reset */
+            });
+    }, [done, saved, correct, questions.length, mode]);
 
     if (questions.length === 0) {
         return (
@@ -126,6 +174,9 @@ function MultipleChoiceEngine({ mode, catalog }: { mode: string; catalog: Aksara
                         : correct >= questions.length / 2
                           ? 'Lumayan! Bisa diulang lagi buat naikin skor.'
                           : 'Yuk diulang — biar nempel.'}
+                </p>
+                <p className="mt-3 text-xs text-muted-foreground">
+                    {saved ? '✓ Hasil tersimpan ke riwayat' : 'Menyimpan...'}
                 </p>
                 <button
                     type="button"

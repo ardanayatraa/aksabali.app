@@ -7,6 +7,7 @@ use App\Http\Controllers\GameHostController;
 use App\Http\Controllers\GamePlayController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PracticeController;
+use App\Http\Controllers\QuizAttemptController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StrokeAttemptController;
@@ -35,6 +36,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Stroke attempts (web POST untuk drill page yg pakai cookie auth + CSRF).
     Route::post('strokes/attempts', [StrokeAttemptController::class, 'store'])->name('strokes.store');
     Route::get('strokes/attempts', [StrokeAttemptController::class, 'index'])->name('strokes.index');
+
+    // Quiz attempts (web POST setelah selesai sesi kuis).
+    Route::post('quiz/attempts', [QuizAttemptController::class, 'store'])->name('quiz.attempts.store');
+    Route::get('quiz/attempts', [QuizAttemptController::class, 'index'])->name('quiz.attempts.index');
 
     // Latihan
     Route::get('latihan', [PracticeController::class, 'index'])->name('latihan.index');
@@ -78,6 +83,9 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('users', [AdminController::class, 'users'])->name('users');
+        Route::get('users/{user}', [AdminController::class, 'userShow'])
+            ->where('user', '[0-9]+')
+            ->name('users.show');
         Route::post('users/{user}/suspend', [AdminController::class, 'toggleSuspend'])->name('users.suspend');
         Route::post('users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
         Route::post('users/{user}/tier', [AdminController::class, 'updateTier'])->name('users.tier');
