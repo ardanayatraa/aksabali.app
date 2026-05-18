@@ -156,8 +156,54 @@ async function normalizeKiUluSeed(connection) {
   console.log('Legacy Ki seed normalized.');
 }
 
+// MySQL advisory lock — prevent dua instance jalanin migration bersamaan
+// saat horizontal scaling (mis. Railway/Render multi-instance deploy).
+const LOCK_NAME = 'aksabali_schema_migrate';
+const LOCK_TIMEOUT_SEC = 60;
+
+async function withMigrationLock(connection, fn) {
+  const [rows] = await connection.query('SELECT GET_LOCK(?, ?) AS got', [LOCK_NAME, LOCK_TIMEOUT_SEC]);
+  const got = Number(rows[0]?.got);
+  if (got !== 1) {
+    throw new Error(
+      `[migrate] Gagal acquire lock '${LOCK_NAME}' (timeout ${LOCK_TIMEOUT_SEC}s). ` +
+      `Instance lain mungkin sedang migrasi — coba lagi sebentar.`
+    );
+  }
+  try {
+    return await fn();
+  } finally {
+    await connection.query('SELECT RELEASE_LOCK(?)', [LOCK_NAME]).catch(() => {});
+  }
+}
+
+function log(message) {
+  const ts = new Date().toISOString();
+  console.log(`[migrate ${ts}] ${message}`);
+}
+
 async function main() {
   loadEnv();
+
+  // Escape hatch buat lokal dev kalau DB belum ready / build-only environment.
+  if (process.env.SKIP_DB_MIGRATE === 'true' || process.env.SKIP_DB_MIGRATE === '1') {
+    log('SKIP_DB_MIGRATE diaktifkan — melewati migrasi.');
+    return;
+  }
+
+  // Kalau DATABASE_URL / DB_HOST tidak ada (mis. build env Vercel), skip dengan
+  // warning, jangan fail build. Migration nanti dijalankan via deploy hook lain.
+  const hasDbConfig =
+    Boolean(process.env.DATABASE_URL) ||
+    (process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME);
+  if (!hasDbConfig) {
+    log('WARN: DB config tidak ditemukan (DATABASE_URL atau DB_HOST/USER/NAME). Skip migrasi.');
+    log('      Set SKIP_DB_MIGRATE=true untuk silent skip, atau isi env var DB.');
+    return;
+  }
+
+  const startedAt = Date.now();
+  log('Memulai migrasi skema database…');
 
   const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf8');
@@ -167,26 +213,38 @@ async function main() {
 
   const connection = await mysql.createConnection(config.databaseConfig);
   try {
-    const seedMarker = 'INSERT INTO categories';
-    const seedIndex = schema.indexOf(seedMarker);
-    const ddl = seedIndex >= 0 ? schema.slice(0, seedIndex) : schema;
-    const seed = seedIndex >= 0 ? schema.slice(seedIndex) : '';
+    await withMigrationLock(connection, async () => {
+      const seedMarker = 'INSERT INTO categories';
+      const seedIndex = schema.indexOf(seedMarker);
+      const ddl = seedIndex >= 0 ? schema.slice(0, seedIndex) : schema;
+      const seed = seedIndex >= 0 ? schema.slice(seedIndex) : '';
 
-    await connection.query(ddl);
-    await ensureColumn(connection, 'aksara', 'image_url', 'TEXT NULL AFTER svg_url');
-    await ensureColumn(connection, 'aksara', 'target_stroke_count', 'INT NOT NULL DEFAULT 0 AFTER image_url');
-    await ensureColumn(connection, 'profiles', 'status', "ENUM('active','suspended') NOT NULL DEFAULT 'active' AFTER tier");
-    if (seed.trim()) {
-      await connection.query(seed);
-    }
-    await normalizeKiUluSeed(connection);
-    console.log('Database schema migrated.');
+      log('Menjalankan DDL schema.sql…');
+      await connection.query(ddl);
+
+      log('Memastikan kolom tambahan (idempotent ensureColumn)…');
+      await ensureColumn(connection, 'aksara', 'image_url', 'TEXT NULL AFTER svg_url');
+      await ensureColumn(connection, 'aksara', 'target_stroke_count', 'INT NOT NULL DEFAULT 0 AFTER image_url');
+      await ensureColumn(connection, 'profiles', 'status', "ENUM('active','suspended') NOT NULL DEFAULT 'active' AFTER tier");
+
+      if (seed.trim()) {
+        log('Menjalankan seed data…');
+        await connection.query(seed);
+      }
+
+      log('Normalisasi legacy Ki seed…');
+      await normalizeKiUluSeed(connection);
+    });
+
+    const elapsed = ((Date.now() - startedAt) / 1000).toFixed(2);
+    log(`✓ Migrasi selesai dalam ${elapsed}s.`);
   } finally {
     await connection.end();
   }
 }
 
 main().catch((error) => {
-  console.error(error);
+  console.error(`[migrate ${new Date().toISOString()}] ✗ Migrasi gagal:`, error.message);
+  if (process.env.DEBUG === 'true') console.error(error);
   process.exit(1);
 });
