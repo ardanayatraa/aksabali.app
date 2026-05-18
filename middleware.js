@@ -8,6 +8,7 @@ const ALWAYS_ALLOW_PREFIXES = [
   "/login",
   "/coming-soon",
   "/maintenance",
+  "/development",
   "/_next/",
   "/aksara/",
   "/og-image.png",
@@ -54,11 +55,12 @@ export async function middleware(request) {
       return NextResponse.rewrite(new URL("/maintenance", request.url));
     }
     if (mode === "development") {
-      // Soft gate: butuh cookie session. Validity-nya dicek di server component / API guard.
-      // Tanpa session = pengunjung umum -> tampilkan coming-soon di URL yang sama.
+      // Internal staging — guest (no session cookie) di-rewrite ke /development
+      // (dedicated landing yg jelas nampilin "DEVELOPMENT MODE" + tombol login tim
+      // + tombol admin). User yg udah login lolos normal.
       const hasSession = Boolean(request.cookies.get("aksara_session")?.value);
       if (!hasSession) {
-        return NextResponse.rewrite(new URL("/coming-soon", request.url));
+        return NextResponse.rewrite(new URL("/development", request.url));
       }
     }
   } catch {
