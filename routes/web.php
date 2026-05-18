@@ -98,5 +98,20 @@ Route::middleware(['auth', 'active'])->group(function () {
 // Midtrans webhook — public (Midtrans server hit langsung).
 Route::post('payment/midtrans-webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
+// Dev-only: login as user by id — guarded oleh APP_ENV=local. Hapus di production.
+if (app()->environment('local')) {
+    Route::get('dev/login/{userId}', function (int $userId, \Illuminate\Http\Request $request) {
+        $user = \App\Models\User::findOrFail($userId);
+        $request->session()->regenerate();
+        \Illuminate\Support\Facades\Auth::login($user, true);
+        $target = match ($user->role) {
+            'admin' => '/admin',
+            'pengajar' => '/guru',
+            default => '/dashboard',
+        };
+        return redirect($target);
+    })->name('dev.login');
+}
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

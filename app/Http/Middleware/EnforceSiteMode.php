@@ -29,6 +29,7 @@ class EnforceSiteMode
         'logout',
         'auth/google/redirect',
         'auth/google/callback',
+        'dev/login', // dev-only di local, safe untuk allowlist
     ];
 
     public function handle(Request $request, Closure $next): Response
