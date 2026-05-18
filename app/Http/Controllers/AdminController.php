@@ -6,6 +6,8 @@ use App\Models\Aksara;
 use App\Models\AppSetting;
 use App\Models\GameSession;
 use App\Models\PaymentTransaction;
+use App\Models\QuizAttempt;
+use App\Models\StrokeAttempt;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -129,6 +131,73 @@ class AdminController extends Controller
         $user->update(['tier' => $data['tier']]);
 
         return back()->with('success', "Tier {$user->email} → {$data['tier']}");
+    }
+
+    /** User detail + history attempts: `/admin/users/{user}`. */
+    public function userShow(User $user): Response
+    {
+        $strokes = StrokeAttempt::query()
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->limit(50)
+            ->get(['id', 'aksara_id', 'mode', 'score', 'passed', 'duration_seconds', 'created_at'])
+            ->map(fn (StrokeAttempt $s) => [
+                'id' => $s->id,
+                'aksara_id' => $s->aksara_id,
+                'mode' => $s->mode,
+                'score' => $s->score,
+                'passed' => (bool) $s->passed,
+                'duration_seconds' => $s->duration_seconds,
+                'created_at' => $s->created_at?->toIso8601String(),
+            ])
+            ->all();
+
+        $quizzes = QuizAttempt::query()
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->limit(50)
+            ->get(['id', 'mode', 'category', 'correct_count', 'total_count', 'score', 'passed', 'duration_seconds', 'created_at'])
+            ->map(fn (QuizAttempt $q) => [
+                'id' => $q->id,
+                'mode' => $q->mode,
+                'category' => $q->category,
+                'correct_count' => $q->correct_count,
+                'total_count' => $q->total_count,
+                'score' => $q->score,
+                'passed' => (bool) $q->passed,
+                'duration_seconds' => $q->duration_seconds,
+                'created_at' => $q->created_at?->toIso8601String(),
+            ])
+            ->all();
+
+        $strokeStats = [
+            'total' => StrokeAttempt::where('user_id', $user->id)->count(),
+            'avg_score' => (int) round(StrokeAttempt::where('user_id', $user->id)->avg('score') ?? 0),
+            'mastered' => StrokeAttempt::where('user_id', $user->id)->where('passed', true)->distinct('aksara_id')->count('aksara_id'),
+        ];
+        $quizStats = [
+            'total' => QuizAttempt::where('user_id', $user->id)->count(),
+            'avg_score' => (int) round(QuizAttempt::where('user_id', $user->id)->avg('score') ?? 0),
+            'passed' => QuizAttempt::where('user_id', $user->id)->where('passed', true)->count(),
+        ];
+
+        return Inertia::render('admin/user-show', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'display_name' => $user->display_name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'tier' => $user->tier,
+                'status' => $user->status,
+                'avatar_url' => $user->avatar_url,
+                'created_at' => $user->created_at?->toIso8601String(),
+            ],
+            'strokeAttempts' => $strokes,
+            'quizAttempts' => $quizzes,
+            'strokeStats' => $strokeStats,
+            'quizStats' => $quizStats,
+        ]);
     }
 
     /** Settings (site mode dll): `/admin/settings`. */

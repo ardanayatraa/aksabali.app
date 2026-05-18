@@ -113,7 +113,12 @@ export default function AdminUsers({ users, filters }: Props) {
                             {users.data.map((u) => (
                                 <tr key={u.id}>
                                     <td className="px-4 py-3">
-                                        <div className="font-bold">{u.name || '—'}</div>
+                                        <Link
+                                            href={route('admin.users.show', { user: u.id })}
+                                            className="font-bold hover:text-primary"
+                                        >
+                                            {u.name || '—'}
+                                        </Link>
                                         <div className="text-xs text-muted-foreground">{u.email}</div>
                                     </td>
                                     <td className="px-4 py-3">

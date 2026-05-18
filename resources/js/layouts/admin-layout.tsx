@@ -2,7 +2,7 @@ import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 import { CP, glyph } from '@/lib/aksara-codepoints';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { BookOpenText, LayoutDashboard, LogOut, type LucideIcon, Settings, Users } from 'lucide-react';
+import { BookOpenText, ExternalLink, LayoutDashboard, LogOut, type LucideIcon, Settings, Sparkles, Users } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 
 interface NavItem {
@@ -18,6 +18,12 @@ const navItems: NavItem[] = [
     { href: '/admin/users', label: 'Pengguna', icon: Users, match: '/admin/users' },
     { href: '/admin/aksara', label: 'Aksara', icon: BookOpenText, match: '/admin/aksara' },
     { href: '/admin/settings', label: 'Pengaturan', icon: Settings, match: '/admin/settings' },
+];
+
+const studentShortcuts: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard siswa', icon: LayoutDashboard, match: '/dashboard', exact: true },
+    { href: '/latihan', label: 'Latihan', icon: BookOpenText, match: '/latihan' },
+    { href: '/quiz', label: 'Kuis', icon: Sparkles, match: '/quiz' },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -87,6 +93,30 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                             );
                         })}
                     </nav>
+
+                    <div className="mt-6 border-t border-border pt-6">
+                        <p className="mb-2 px-3 text-[0.62rem] font-black uppercase tracking-[0.18em] text-muted-foreground/70">
+                            Preview siswa
+                        </p>
+                        <nav className="grid gap-1">
+                            {studentShortcuts.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="inline-flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                    >
+                                        <span className="inline-flex items-center gap-2.5">
+                                            <Icon className="h-3.5 w-3.5" />
+                                            {item.label}
+                                        </span>
+                                        <ExternalLink className="h-3 w-3 opacity-50" />
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+                    </div>
                 </aside>
 
                 <div className="lg:hidden">
