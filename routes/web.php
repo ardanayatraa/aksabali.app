@@ -106,6 +106,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('aksara/{aksara}/edit', [AdminAksaraController::class, 'edit'])->name('aksara.edit');
         Route::put('aksara/{aksara}', [AdminAksaraController::class, 'update'])->name('aksara.update');
         Route::delete('aksara/{aksara}', [AdminAksaraController::class, 'destroy'])->name('aksara.destroy');
+        Route::post('aksara/{aksara}/svg', [AdminAksaraController::class, 'uploadSvg'])->name('aksara.svg');
     });
 });
 
