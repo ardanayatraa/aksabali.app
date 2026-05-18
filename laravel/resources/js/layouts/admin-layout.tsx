@@ -1,4 +1,5 @@
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
+import { SiteModeBanner } from '@/components/site-mode-banner';
 import { CP, glyph } from '@/lib/aksara-codepoints';
 import { type SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
@@ -229,6 +230,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </div>
 
             <main className="relative z-10 lg:pl-[17rem]">
+                <SiteModeBanner />
                 <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</div>
             </main>
         </div>

@@ -33,6 +33,8 @@ export interface SharedData {
     auth: Auth;
     /** Stats global admin (Kategori/Aksara/Akun) — di-share via HandleInertiaRequests untuk halaman /admin/*. */
     adminStats?: AdminStats | null;
+    /** Site mode global (live | coming_soon | maintenance | development) — di-share supaya admin layout bisa nampilin banner. */
+    siteMode?: string;
     [key: string]: unknown;
 }
 
