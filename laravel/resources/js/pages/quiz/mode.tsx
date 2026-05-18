@@ -175,8 +175,15 @@ function MultipleChoiceEngine({ mode, catalog }: { mode: string; catalog: Aksara
                           ? 'Lumayan! Bisa diulang lagi buat naikin skor.'
                           : 'Yuk diulang — biar nempel.'}
                 </p>
-                <p className="mt-3 text-xs text-muted-foreground">
-                    {saved ? '✓ Hasil tersimpan ke riwayat' : 'Menyimpan...'}
+                <p className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                    {saved ? (
+                        <>
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                            Hasil tersimpan ke riwayat
+                        </>
+                    ) : (
+                        'Menyimpan...'
+                    )}
                 </p>
                 <button
                     type="button"
