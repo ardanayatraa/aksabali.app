@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\AdminAksaraController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GameHostController;
 use App\Http\Controllers\GamePlayController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
@@ -50,7 +53,37 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('game/{session}/poll', [GamePlayController::class, 'poll'])->name('game.poll');
     Route::post('game/{session}/answer', [GamePlayController::class, 'answer'])->name('game.answer');
     Route::get('game/{session}/podium', [GamePlayController::class, 'podium'])->name('game.podium');
+
+    // Pembayaran
+    Route::get('harga', [PaymentController::class, 'pricing'])->name('pricing');
+    Route::post('payment/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::get('payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
+    Route::get('payment/{transaction}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::get('payment/{transaction}/status', [PaymentController::class, 'status'])->name('payment.status');
+
+    // Admin — semua middleware admin.
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('users', [AdminController::class, 'users'])->name('users');
+        Route::post('users/{user}/suspend', [AdminController::class, 'toggleSuspend'])->name('users.suspend');
+        Route::post('users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
+        Route::post('users/{user}/tier', [AdminController::class, 'updateTier'])->name('users.tier');
+
+        Route::get('settings', [AdminController::class, 'settings'])->name('settings');
+        Route::post('settings/site-mode', [AdminController::class, 'updateSiteMode'])->name('settings.site-mode');
+
+        // CMS aksara
+        Route::get('aksara', [AdminAksaraController::class, 'index'])->name('aksara.index');
+        Route::get('aksara/create', [AdminAksaraController::class, 'create'])->name('aksara.create');
+        Route::post('aksara', [AdminAksaraController::class, 'store'])->name('aksara.store');
+        Route::get('aksara/{aksara}/edit', [AdminAksaraController::class, 'edit'])->name('aksara.edit');
+        Route::put('aksara/{aksara}', [AdminAksaraController::class, 'update'])->name('aksara.update');
+        Route::delete('aksara/{aksara}', [AdminAksaraController::class, 'destroy'])->name('aksara.destroy');
+    });
 });
+
+// Midtrans webhook — public (Midtrans server hit langsung).
+Route::post('payment/midtrans-webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
