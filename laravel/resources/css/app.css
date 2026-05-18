@@ -240,6 +240,20 @@ html.theme-transitioning *::after {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Promo banner — saat banner visible, nav + main geser turun supaya ga ketabrak.
+   PromoBanner component toggle class .promo-visible di <html> via JS. */
+html.promo-visible .promo-nav-with-banner {
+    top: 2.75rem; /* 44px banner mobile */
+}
+@media (min-width: 640px) {
+    html.promo-visible .promo-nav-with-banner {
+        top: 2.5rem;
+    }
+}
+html.promo-visible .promo-main-with-banner {
+    padding-top: 8rem;
+}
+
 /* Custom scrollbar — brick tint */
 * {
     scrollbar-width: thin;
