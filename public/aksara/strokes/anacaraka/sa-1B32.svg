@@ -1,0 +1,21 @@
+<svg viewBox="0 0 109 109" shape-rendering="geometricPrecision" xmlns="http://www.w3.org/2000/svg">
+    <!-- Stroke 1: Sa -->
+    <path
+        id="stroke-1"
+        d="
+            M 17.0 42.8
+            C 16.8 34.6 30.4 32.6 34.0 40.5
+            C 37.4 48.2 36.9 62.0 31.0 69.6
+            C 26.1 75.8 15.1 75.2 12.7 68.2
+            C 10.5 61.6 18.2 56.6 30.6 61.4
+            C 40.5 65.2 47.1 73.3 59.4 73.8
+            C 70.2 74.2 75.6 66.3 75.1 56.7
+            C 74.5 46.6 75.8 39.9 83.1 38.9
+            C 91.8 37.8 95.5 44.8 95.5 53.8
+            C 95.5 61.8 95.5 69.8 95.5 77.8"
+        fill="none"
+        stroke="black"
+        stroke-width="4.8"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+</svg>

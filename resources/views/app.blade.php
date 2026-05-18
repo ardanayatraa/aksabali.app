@@ -8,6 +8,22 @@
 
         <title inertia>{{ config('app.name', 'Aksa Bali') }}</title>
 
+        {{-- SEO + social meta --}}
+        <meta name="description" content="Aksa Bali — belajar nyurat aksara Bali. Stroke recognition, kuis multiplayer, web + Android, sekali bayar." />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="canonical" href="{{ url()->current() }}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Aksa Bali — Goresan indah, mengingat sejarah" />
+        <meta property="og:description" content="Belajar nyurat aksara Bali. Stroke recognition + kuis kelas. Web + Android." />
+        <meta property="og:url" content="{{ url()->current() }}" />
+        <meta property="og:site_name" content="Aksa Bali" />
+        <meta property="og:locale" content="id_ID" />
+        <meta property="og:image" content="{{ url('/logo.svg') }}" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Aksa Bali — Belajar nyurat aksara Bali" />
+        <meta name="twitter:description" content="Stroke recognition + kuis kelas. Web + Android, sekali bayar." />
+        <meta name="twitter:image" content="{{ url('/logo.svg') }}" />
+
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link
             href="https://fonts.bunny.net/css?family=lexend:400,500,600,700|epilogue:400,500,600,700,800|noto-sans-balinese:400"
