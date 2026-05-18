@@ -246,5 +246,8 @@ async function main() {
 main().catch((error) => {
   console.error(`[migrate ${new Date().toISOString()}] ✗ Migrasi gagal:`, error.message);
   if (process.env.DEBUG === 'true') console.error(error);
-  process.exit(1);
+  // Default: exit 0 supaya kalau dipanggil dari prestart/build hook, kegagalan
+  // migrasi tidak crash deploy. Pakai --strict untuk exit 1 (cocok untuk CI).
+  const strict = process.argv.includes('--strict') || process.env.MIGRATE_STRICT === 'true';
+  process.exit(strict ? 1 : 0);
 });

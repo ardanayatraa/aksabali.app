@@ -13,7 +13,6 @@
     "db:seed-admin": "node scripts/seed-admin.cjs",
     "db:seed-pangangge": "node scripts/seed-pangangge.cjs",
     "build": "next build",
-    "prestart": "node scripts/migrate.cjs",
     "start": "next start",
     "deploy:migrate": "node scripts/migrate.cjs && node scripts/seed-pangangge.cjs",
     "prod:check": "npm run lint && npm run build && npm audit --omit=dev"
