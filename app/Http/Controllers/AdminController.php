@@ -226,4 +226,196 @@ class AdminController extends Controller
 
         return back()->with('success', "Site mode → {$data['site_mode']}");
     }
+
+    /** Aktivitas belajar: riwayat stroke + quiz attempts dari semua user. */
+    public function activity(): Response
+    {
+        $strokes = StrokeAttempt::query()
+            ->leftJoin('users', 'users.id', '=', 'stroke_attempts.user_id')
+            ->leftJoin('aksara', 'aksara.id', '=', 'stroke_attempts.aksara_id')
+            ->orderByDesc('stroke_attempts.created_at')
+            ->limit(30)
+            ->get([
+                'stroke_attempts.id',
+                'stroke_attempts.user_id',
+                'stroke_attempts.aksara_id',
+                'stroke_attempts.mode',
+                'stroke_attempts.score',
+                'stroke_attempts.passed',
+                'stroke_attempts.created_at',
+                'users.name as display_name',
+                'users.email',
+                'aksara.name as aksara_name',
+            ])
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'display_name' => $row->display_name,
+                'email' => $row->email,
+                'aksara_id' => $row->aksara_id,
+                'aksara_name' => $row->aksara_name,
+                'mode' => $row->mode,
+                'score' => (int) $row->score,
+                'passed' => (bool) $row->passed,
+                'created_at' => $row->created_at?->toIso8601String(),
+            ])
+            ->all();
+
+        $quizzes = QuizAttempt::query()
+            ->leftJoin('users', 'users.id', '=', 'quiz_attempts.user_id')
+            ->orderByDesc('quiz_attempts.created_at')
+            ->limit(30)
+            ->get([
+                'quiz_attempts.id',
+                'quiz_attempts.user_id',
+                'quiz_attempts.mode',
+                'quiz_attempts.correct_count',
+                'quiz_attempts.total_count',
+                'quiz_attempts.score',
+                'quiz_attempts.passed',
+                'quiz_attempts.created_at',
+                'users.name as display_name',
+                'users.email',
+            ])
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'display_name' => $row->display_name,
+                'email' => $row->email,
+                'mode' => $row->mode,
+                'correct_count' => (int) $row->correct_count,
+                'total_count' => (int) $row->total_count,
+                'score' => (int) $row->score,
+                'passed' => (bool) $row->passed,
+                'created_at' => $row->created_at?->toIso8601String(),
+            ])
+            ->all();
+
+        return Inertia::render('admin/activity', [
+            'strokeAttempts' => $strokes,
+            'quizAttempts' => $quizzes,
+        ]);
+    }
+
+    /** Daftar sesi game kelas: `/admin/game`. */
+    public function gameSessions(): Response
+    {
+        $sessions = GameSession::query()
+            ->leftJoin('users', 'users.id', '=', 'game_sessions.host_id')
+            ->leftJoin('game_players', 'game_players.session_id', '=', 'game_sessions.id')
+            ->selectRaw(
+                'game_sessions.id, game_sessions.pin, game_sessions.title, game_sessions.status,
+                 game_sessions.question_count, game_sessions.seconds_per_question,
+                 game_sessions.current_question_index, game_sessions.created_at,
+                 users.name as host_name,
+                 COUNT(game_players.id) as player_count'
+            )
+            ->groupBy(
+                'game_sessions.id', 'game_sessions.pin', 'game_sessions.title', 'game_sessions.status',
+                'game_sessions.question_count', 'game_sessions.seconds_per_question',
+                'game_sessions.current_question_index', 'game_sessions.created_at', 'users.name'
+            )
+            ->orderByDesc('game_sessions.created_at')
+            ->limit(30)
+            ->get()
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'pin' => $row->pin,
+                'title' => $row->title,
+                'status' => $row->status,
+                'question_count' => (int) $row->question_count,
+                'seconds_per_question' => (int) $row->seconds_per_question,
+                'player_count' => (int) $row->player_count,
+                'host_name' => $row->host_name,
+                'created_at' => $row->created_at?->toIso8601String() ?? null,
+            ])
+            ->all();
+
+        return Inertia::render('admin/game', [
+            'sessions' => $sessions,
+        ]);
+    }
+
+    /** Daftar transaksi pembayaran: `/admin/payments`. */
+    public function payments(): Response
+    {
+        $transactions = PaymentTransaction::query()
+            ->leftJoin('users', 'users.id', '=', 'payment_transactions.user_id')
+            ->orderByDesc('payment_transactions.created_at')
+            ->limit(30)
+            ->get([
+                'payment_transactions.id',
+                'payment_transactions.midtrans_transaction_id as order_id',
+                'payment_transactions.amount',
+                'payment_transactions.currency',
+                'payment_transactions.plan',
+                'payment_transactions.status',
+                'payment_transactions.payment_type',
+                'payment_transactions.paid_at',
+                'payment_transactions.created_at',
+                'users.name as display_name',
+                'users.email',
+            ])
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'order_id' => $row->order_id ?? (string) $row->id,
+                'amount' => (int) $row->amount,
+                'currency' => $row->currency,
+                'plan' => $row->plan,
+                'status' => $row->status,
+                'payment_type' => $row->payment_type,
+                'display_name' => $row->display_name,
+                'email' => $row->email,
+                'paid_at' => $row->paid_at?->toIso8601String(),
+                'created_at' => $row->created_at?->toIso8601String(),
+            ])
+            ->all();
+
+        return Inertia::render('admin/payments', [
+            'transactions' => $transactions,
+        ]);
+    }
+
+    /** Bank kuis: aksara catalog grouped per kategori + daftar mode kuis. */
+    public function quizBank(): Response
+    {
+        $modes = [
+            ['id' => 'nyurat', 'name' => 'Kuis Nyurat', 'description' => 'Menulis aksara di kanvas stroke recognition.'],
+            ['id' => 'kata', 'name' => 'Tebak Kata Bolak Balik', 'description' => 'Aksara ke Latin dan Latin ke aksara.'],
+            ['id' => 'huruf', 'name' => 'Tebak Huruf Bolak Balik', 'description' => 'Anacaraka, swara, dan angka dua arah.'],
+            ['id' => 'match', 'name' => 'Pencocokan Kata', 'description' => 'Drag kata Latin ke kartu aksara.'],
+            ['id' => 'maca', 'name' => 'Membaca Aksara Bali', 'description' => 'Baca aksara lalu jawab bacaan Latin.'],
+            ['id' => 'acak', 'name' => 'Mode Acak', 'description' => 'Soal acak dari semua bank kuis.'],
+        ];
+
+        $groups = Aksara::query()
+            ->leftJoin('categories', 'categories.id', '=', 'aksara.category')
+            ->orderBy('categories.order')
+            ->orderBy('aksara.order')
+            ->get([
+                'aksara.id',
+                'aksara.name',
+                'aksara.char as glyph',
+                'aksara.latin',
+                'aksara.category',
+                'categories.name as category_name',
+            ])
+            ->groupBy('category')
+            ->map(fn ($items, $catId) => [
+                'id' => $catId,
+                'name' => $items->first()->category_name ?? $catId,
+                'count' => $items->count(),
+                'items' => $items->map(fn ($a) => [
+                    'id' => $a->id,
+                    'latin' => $a->latin,
+                    'glyph' => $a->glyph,
+                    'group' => $a->category_name ?? $a->category,
+                ])->values()->all(),
+            ])
+            ->values()
+            ->all();
+
+        return Inertia::render('admin/quiz-bank', [
+            'modes' => $modes,
+            'groups' => $groups,
+        ]);
+    }
 }
