@@ -1,3 +1,4 @@
+import { AnimatedDaHero } from '@/components/animated-da-hero';
 import { AnimatedGridBackground } from '@/components/animated-grid-background';
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 import { PromoBanner } from '@/components/promo-banner';
@@ -194,8 +195,8 @@ export default function Welcome() {
                             <div className="relative order-first min-w-0 lg:order-none">
                                 <div className="relative mx-auto flex aspect-square w-full max-w-[342px] items-center justify-center overflow-hidden rounded-[28px] bg-gradient-to-br from-muted to-secondary shadow-[0_1px_2px_hsl(var(--foreground)/0.05),0_24px_60px_hsl(var(--primary)/0.10)] sm:max-w-[480px]">
                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,hsl(var(--primary)/0.12),transparent_55%),radial-gradient(circle_at_75%_75%,hsl(var(--tertiary)/0.08),transparent_55%)]" />
-                                    <div className="bali-text relative z-10 text-[clamp(120px,22vw,200px)] leading-none text-primary">
-                                        {glyph(CP.da, CP.tedung)}
+                                    <div className="relative z-10 h-[68%] w-[68%] animate-[float_6s_ease-in-out_infinite]">
+                                        <AnimatedDaHero />
                                     </div>
                                 </div>
                             </div>
