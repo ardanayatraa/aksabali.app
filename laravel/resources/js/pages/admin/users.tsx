@@ -59,13 +59,9 @@ export default function AdminUsers({ users, filters }: Props) {
         <AdminLayout>
             <Head title="Pengguna — Admin" />
 
-            <section>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">Pengguna</p>
-                <h1 className="mt-2 font-display text-3xl font-semibold leading-tight tracking-tight">Kelola akun.</h1>
-                <p className="mt-2 text-sm text-muted-foreground">Filter, cari, ubah role, suspend, atau grant Premium manual.</p>
-            </section>
+            <h1 className="font-display text-3xl font-semibold tracking-tight">Kelola akun</h1>
 
-            <section className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                 <form onSubmit={submitSearch} className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
@@ -95,89 +91,81 @@ export default function AdminUsers({ users, filters }: Props) {
                     <option value="active">Active</option>
                     <option value="suspended">Suspended</option>
                 </select>
-            </section>
+            </div>
 
-            <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-muted/50 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                            <tr>
-                                <th className="px-4 py-3">Pengguna</th>
-                                <th className="px-4 py-3">Role</th>
-                                <th className="px-4 py-3">Tier</th>
-                                <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3 text-right">Aksi</th>
+            <div className="mt-5 overflow-x-auto">
+                <table className="w-full">
+                    <thead className="border-b border-border text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        <tr>
+                            <th className="py-2 pr-3">Pengguna</th>
+                            <th className="py-2 pr-3">Role</th>
+                            <th className="py-2 pr-3">Tier</th>
+                            <th className="py-2 pr-3">Status</th>
+                            <th className="py-2 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border text-sm">
+                        {users.data.map((u) => (
+                            <tr key={u.id}>
+                                <td className="py-3 pr-3">
+                                    <Link
+                                        href={route('admin.users.show', { user: u.id })}
+                                        className="font-bold transition hover:text-primary"
+                                    >
+                                        {u.name || '—'}
+                                    </Link>
+                                    <div className="text-xs text-muted-foreground">{u.email}</div>
+                                </td>
+                                <td className="py-3 pr-3">
+                                    <select
+                                        value={u.role}
+                                        onChange={(e) => changeRole(u, e.target.value)}
+                                        className="rounded-md border border-border bg-background px-2 py-1 text-xs focus:border-primary focus:outline-none"
+                                    >
+                                        <option value="siswa">Siswa</option>
+                                        <option value="pengajar">Pengajar</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </td>
+                                <td className="py-3 pr-3">
+                                    <select
+                                        value={u.tier}
+                                        onChange={(e) => changeTier(u, e.target.value)}
+                                        className="rounded-md border border-border bg-background px-2 py-1 text-xs focus:border-primary focus:outline-none"
+                                    >
+                                        <option value="free">Free</option>
+                                        <option value="lite">Lite</option>
+                                        <option value="premium">Premium</option>
+                                    </select>
+                                </td>
+                                <td className="py-3 pr-3">
+                                    <span
+                                        className={`inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider ${
+                                            u.status === 'suspended' ? 'text-destructive' : 'text-emerald-600'
+                                        }`}
+                                    >
+                                        {u.status === 'suspended' ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                                        {u.status}
+                                    </span>
+                                </td>
+                                <td className="py-3 text-right">
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleSuspend(u)}
+                                        className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-bold text-muted-foreground transition hover:border-destructive hover:text-destructive"
+                                    >
+                                        {u.status === 'suspended' ? 'Aktifkan' : 'Suspend'}
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border text-sm">
-                            {users.data.map((u) => (
-                                <tr key={u.id}>
-                                    <td className="px-4 py-3">
-                                        <Link
-                                            href={route('admin.users.show', { user: u.id })}
-                                            className="font-bold hover:text-primary"
-                                        >
-                                            {u.name || '—'}
-                                        </Link>
-                                        <div className="text-xs text-muted-foreground">{u.email}</div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <select
-                                            value={u.role}
-                                            onChange={(e) => changeRole(u, e.target.value)}
-                                            className="rounded-md border border-border bg-background px-2 py-1 text-xs focus:border-primary focus:outline-none"
-                                        >
-                                            <option value="siswa">Siswa</option>
-                                            <option value="pengajar">Pengajar</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <select
-                                            value={u.tier}
-                                            onChange={(e) => changeTier(u, e.target.value)}
-                                            className="rounded-md border border-border bg-background px-2 py-1 text-xs focus:border-primary focus:outline-none"
-                                        >
-                                            <option value="free">Free</option>
-                                            <option value="lite">Lite</option>
-                                            <option value="premium">Premium</option>
-                                        </select>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <span
-                                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                                                u.status === 'suspended'
-                                                    ? 'bg-destructive/10 text-destructive'
-                                                    : 'bg-emerald-500/10 text-emerald-600'
-                                            }`}
-                                        >
-                                            {u.status === 'suspended' ? (
-                                                <UserX className="h-3 w-3" />
-                                            ) : (
-                                                <UserCheck className="h-3 w-3" />
-                                            )}
-                                            {u.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <button
-                                            type="button"
-                                            onClick={() => toggleSuspend(u)}
-                                            className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-bold text-muted-foreground transition hover:border-destructive hover:text-destructive"
-                                        >
-                                            {u.status === 'suspended' ? 'Aktifkan' : 'Suspend'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
 
                 {users.data.length === 0 && (
-                    <p className="px-4 py-10 text-center text-sm text-muted-foreground">Tidak ada pengguna yang cocok.</p>
+                    <p className="py-10 text-center text-sm text-muted-foreground">Tidak ada pengguna yang cocok.</p>
                 )}
-            </section>
+            </div>
 
             {users.last_page > 1 && (
                 <nav className="mt-6 flex flex-wrap items-center justify-center gap-1">

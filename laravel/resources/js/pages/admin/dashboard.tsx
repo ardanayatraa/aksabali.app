@@ -53,77 +53,73 @@ export default function AdminDashboard({ stats, recentUsers, siteMode }: Props) 
         <AdminLayout>
             <Head title="Admin Dashboard — Aksa Bali" />
 
-            <section>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">Admin</p>
-                <h1 className="mt-2 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Ringkasan platform.</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Site mode saat ini:{' '}
-                    <span className={`font-bold ${siteMode === 'live' ? 'text-emerald-600' : 'text-amber-600'}`}>{siteMode}</span>.{' '}
-                    <Link href={route('admin.settings')} className="font-bold text-primary hover:underline">
-                        Ubah →
-                    </Link>
-                </p>
-            </section>
+            <h1 className="font-display text-3xl font-semibold tracking-tight">Ringkasan platform</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+                Site mode:{' '}
+                <span className={`font-bold ${siteMode === 'live' ? 'text-emerald-600' : 'text-amber-600'}`}>{siteMode}</span>.{' '}
+                <Link href={route('admin.settings')} className="font-bold text-primary hover:underline">
+                    Ubah →
+                </Link>
+            </p>
 
-            <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                 {tiles.map((tile) => {
                     const Icon = tile.icon;
                     return (
-                        <div key={tile.label} className="rounded-2xl border border-border bg-card p-5">
-                            <div className="flex items-center justify-between">
-                                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{tile.label}</p>
+                        <div key={tile.label} className="border-l-2 border-border pl-4">
+                            <div className="flex items-center gap-2">
                                 <Icon className={`h-4 w-4 ${tile.accent}`} />
+                                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{tile.label}</p>
                             </div>
-                            <p className="mt-2 font-display text-4xl font-semibold tracking-tight">{tile.value}</p>
-                            {tile.sub && <p className="mt-1 text-xs text-muted-foreground">{tile.sub}</p>}
+                            <p className="mt-1 font-display text-4xl font-semibold tracking-tight">{tile.value}</p>
+                            {tile.sub && <p className="text-xs text-muted-foreground">{tile.sub}</p>}
                         </div>
                     );
                 })}
-            </section>
+            </div>
 
-            <section className="mt-8 rounded-3xl border border-border bg-card p-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pengguna terbaru</p>
-                        <h2 className="mt-1 font-display text-xl font-bold tracking-tight">{recentUsers.length} terdaftar</h2>
-                    </div>
+            <section className="mt-10">
+                <div className="flex items-baseline justify-between gap-3">
+                    <h2 className="font-display text-xl font-bold tracking-tight">
+                        Pengguna terbaru <span className="text-sm font-medium text-muted-foreground">· {recentUsers.length} terdaftar</span>
+                    </h2>
                     <Link
                         href={route('admin.users')}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-bold text-muted-foreground transition hover:border-primary hover:text-primary"
+                        className="text-xs font-bold text-primary transition hover:underline"
                     >
-                        Kelola semua
+                        Kelola semua →
                     </Link>
                 </div>
 
                 {recentUsers.length === 0 ? (
                     <p className="mt-4 text-sm text-muted-foreground">Belum ada pengguna.</p>
                 ) : (
-                    <ul className="mt-4 grid gap-2">
+                    <ul className="mt-3 divide-y divide-border">
                         {recentUsers.map((u) => (
-                            <li
-                                key={u.id}
-                                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-background px-4 py-2.5"
-                            >
+                            <li key={u.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate font-bold">{u.name || u.email}</p>
+                                    <Link
+                                        href={route('admin.users.show', { user: u.id })}
+                                        className="truncate font-bold transition hover:text-primary"
+                                    >
+                                        {u.name || u.email}
+                                    </Link>
                                     <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                    <span className="rounded-full bg-foreground/[0.04] px-2 py-0.5 font-bold uppercase tracking-wider text-muted-foreground">
-                                        {u.role}
-                                    </span>
+                                    <span className="font-bold uppercase tracking-wider text-muted-foreground">{u.role}</span>
                                     <span
-                                        className={`rounded-full px-2 py-0.5 font-bold uppercase tracking-wider ${
-                                            u.tier === 'premium' || u.tier === 'lite'
-                                                ? 'bg-amber-500/10 text-amber-600'
-                                                : 'bg-muted text-muted-foreground'
+                                        className={`font-bold uppercase tracking-wider ${
+                                            u.tier === 'premium' || u.tier === 'lite' ? 'text-amber-600' : 'text-muted-foreground'
                                         }`}
                                     >
                                         {u.tier}
                                     </span>
-                                    <span className="flex items-center gap-1 text-muted-foreground">
-                                        {u.status === 'suspended' ? <UserX className="h-3 w-3 text-destructive" /> : <UserCheck className="h-3 w-3 text-emerald-500" />}
-                                    </span>
+                                    {u.status === 'suspended' ? (
+                                        <UserX className="h-3.5 w-3.5 text-destructive" />
+                                    ) : (
+                                        <UserCheck className="h-3.5 w-3.5 text-emerald-500" />
+                                    )}
                                 </div>
                             </li>
                         ))}
