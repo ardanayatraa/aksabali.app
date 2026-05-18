@@ -10,21 +10,21 @@ interface Props {
 }
 
 const modeMeta: Record<string, { label: string; desc: string; chip: string }> = {
-    live: { label: 'Live', desc: 'Semua halaman publik aktif normal.', chip: 'bg-emerald-500/10 text-emerald-600' },
+    live: { label: 'Live', desc: 'Semua halaman publik aktif normal.', chip: 'text-emerald-600' },
     coming_soon: {
         label: 'Coming Soon',
         desc: 'Landing tampilkan countdown ke launch_at. Login & dashboard tetap bisa diakses oleh admin.',
-        chip: 'bg-amber-500/10 text-amber-600',
+        chip: 'text-amber-600',
     },
     maintenance: {
         label: 'Maintenance',
         desc: 'Semua halaman publik diblok dgn pesan. Hanya admin yang masih bisa masuk.',
-        chip: 'bg-destructive/10 text-destructive',
+        chip: 'text-destructive',
     },
     development: {
         label: 'Development',
         desc: 'Mode internal — buat staging/preview. Mirip Live tapi feature flag aktif.',
-        chip: 'bg-muted text-muted-foreground',
+        chip: 'text-muted-foreground',
     },
 };
 
@@ -43,24 +43,21 @@ export default function AdminSettings({ siteMode, launchAt, modes }: Props) {
         <AdminLayout>
             <Head title="Pengaturan — Admin" />
 
-            <section>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">Pengaturan</p>
-                <h1 className="mt-2 font-display text-3xl font-semibold leading-tight tracking-tight">Site mode + launch.</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Ubah perilaku platform secara global. Cache 5 detik, jadi efek perubahan kira-kira hampir-langsung.
-                </p>
-            </section>
+            <h1 className="font-display text-3xl font-semibold tracking-tight">Site mode</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+                Cache 5 detik — efek perubahan hampir-langsung.
+            </p>
 
-            <form onSubmit={submit} className="mt-6 rounded-3xl border border-border bg-card p-6 sm:p-8">
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Site mode</p>
+            <form onSubmit={submit} className="mt-6 max-w-3xl">
+                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Mode</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     {modes.map((m) => {
-                        const meta = modeMeta[m] ?? { label: m, desc: '', chip: 'bg-muted text-muted-foreground' };
+                        const meta = modeMeta[m] ?? { label: m, desc: '', chip: 'text-muted-foreground' };
                         const active = form.data.site_mode === m;
                         return (
                             <label
                                 key={m}
-                                className={`relative flex cursor-pointer flex-col gap-2 rounded-2xl border p-4 transition ${
+                                className={`relative flex cursor-pointer flex-col gap-2 rounded-lg border p-4 transition ${
                                     active ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/40'
                                 }`}
                             >
@@ -74,9 +71,7 @@ export default function AdminSettings({ siteMode, launchAt, modes }: Props) {
                                 />
                                 <div className="flex items-center justify-between">
                                     <span className="font-display text-lg font-bold tracking-tight">{meta.label}</span>
-                                    <span className={`rounded-full px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider ${meta.chip}`}>
-                                        {m}
-                                    </span>
+                                    <span className={`text-[0.6rem] font-bold uppercase tracking-wider ${meta.chip}`}>{m}</span>
                                 </div>
                                 <p className="text-sm leading-6 text-muted-foreground">{meta.desc}</p>
                             </label>
@@ -86,7 +81,7 @@ export default function AdminSettings({ siteMode, launchAt, modes }: Props) {
 
                 <div className="mt-6">
                     <label htmlFor="launch_at" className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                        Launch date (untuk Coming Soon)
+                        Launch date <span className="font-normal normal-case tracking-normal text-muted-foreground/70">(buat Coming Soon)</span>
                     </label>
                     <input
                         id="launch_at"
@@ -106,9 +101,7 @@ export default function AdminSettings({ siteMode, launchAt, modes }: Props) {
                     {form.processing ? 'Menyimpan...' : 'Simpan'}
                 </button>
 
-                {form.recentlySuccessful && (
-                    <p className="mt-3 text-sm font-bold text-emerald-600">Tersimpan.</p>
-                )}
+                {form.recentlySuccessful && <p className="mt-3 text-sm font-bold text-emerald-600">Tersimpan.</p>}
             </form>
         </AdminLayout>
     );
