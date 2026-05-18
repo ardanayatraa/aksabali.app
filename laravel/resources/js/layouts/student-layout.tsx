@@ -70,9 +70,18 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
                             <div className="flex items-center gap-2">
                                 <Link
                                     href={route('profile.edit')}
-                                    className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition hover:border-primary hover:text-primary sm:inline-flex"
+                                    className="hidden items-center gap-2 rounded-lg border border-border bg-card px-2 py-1.5 text-sm font-medium text-foreground transition hover:border-primary hover:text-primary sm:inline-flex"
                                 >
-                                    <UserRound className="h-4 w-4" />
+                                    {(user as { avatar_url?: string }).avatar_url ? (
+                                        <img
+                                            src={(user as { avatar_url?: string }).avatar_url ?? ''}
+                                            alt=""
+                                            className="h-6 w-6 rounded-full"
+                                            referrerPolicy="no-referrer"
+                                        />
+                                    ) : (
+                                        <UserRound className="h-4 w-4" />
+                                    )}
                                     <span className="max-w-[120px] truncate">{user.name || user.email}</span>
                                 </Link>
                                 <button

@@ -39,6 +39,7 @@ class QuizController extends Controller
                 'latin' => $a->latin,
                 'category' => $a->category,
                 'is_premium' => (bool) $a->is_premium,
+                'svg_url' => $a->svg_url,
             ])
             ->all();
 

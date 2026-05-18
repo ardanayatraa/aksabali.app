@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\AdminAksaraController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GameHostController;
 use App\Http\Controllers\GamePlayController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\StrokeAttemptController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,14 +16,19 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-// Game lobby (join via PIN) — boleh diakses tanpa login, supaya tamu bisa main juga.
+// Promo page — public.
+Route::get('only25k', fn () => Inertia::render('only25k'))->name('only25k');
+
+// Game lobby (join via PIN) — boleh diakses tanpa login.
 Route::get('game/lobby', [GamePlayController::class, 'lobby'])->name('game.lobby');
 Route::post('game/join', [GamePlayController::class, 'join'])->name('game.join');
 
 Route::middleware(['auth', 'active'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Stroke attempts (web POST untuk drill page yg pakai cookie auth + CSRF).
+    Route::post('strokes/attempts', [StrokeAttemptController::class, 'store'])->name('strokes.store');
+    Route::get('strokes/attempts', [StrokeAttemptController::class, 'index'])->name('strokes.index');
 
     // Latihan
     Route::get('latihan', [PracticeController::class, 'index'])->name('latihan.index');
