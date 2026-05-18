@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Aksara;
+use App\Models\AppSetting;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
@@ -71,6 +72,10 @@ class HandleInertiaRequests extends Middleware
                 'aksara' => Aksara::count(),
                 'users' => User::count(),
             ] : null,
+            // Site mode dibagikan global biar admin layout bisa nampilin banner
+            // peringatan kalau mode bukan 'live' (admin selalu bypass gate, jadi
+            // kalau gak ada banner, admin gak sadar maintenance lagi aktif).
+            'siteMode' => fn () => AppSetting::siteMode(),
         ]);
     }
 }
