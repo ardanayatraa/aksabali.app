@@ -326,14 +326,14 @@ html {
     }
 }
 
-/* Float vertical — hero card subtle bobbing. */
+/* Float vertical — hero card subtle bobbing, smoother + lebih lambat. */
 @keyframes float {
     0%,
     100% {
         transform: translateY(0);
     }
     50% {
-        transform: translateY(-6px);
+        transform: translateY(-8px);
     }
 }
 
@@ -373,7 +373,8 @@ html {
 .animate-draw {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw-stroke 1.25s ease forwards;
+    /* cubic-bezier custom — smooth in/out, ga buru-buru di awal & akhir */
+    animation: draw-stroke 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 @keyframes stroke-fade {
