@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnforceSiteMode;
 use App\Http\Middleware\EnsureActive;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureStudent;
@@ -14,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
+        api: __DIR__.'/../routes/api.php',
+        apiPrefix: 'api',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -21,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             EnsureActive::class,
+            EnforceSiteMode::class,
         ]);
 
         $middleware->alias([
@@ -30,9 +34,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureActive::class,
         ]);
 
-        // Webhook eksternal Midtrans tidak punya CSRF token.
+        // Webhook eksternal + mobile API tidak punya CSRF token.
         $middleware->validateCsrfTokens(except: [
             'payment/midtrans-webhook',
+            'api/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
